@@ -309,9 +309,9 @@
             </div>
         </div>
 
-        <div id="game-over-modal" class="modal-overlay">
+        <div id="end-game-modal" class="modal-overlay">
             <div class="modal-content">
-                <h2 id="end-game-title">Проигрыш</h2>
+                <h2 id="end-game-title"></h2>
                 <p>Ваш счёт: <span id="final-score">0</span></p>
                 <div class="modal-buttons">
                     <button id="extra-life-btn" class="modal-button primary">Доп. попытка (Ad)</button>
@@ -342,8 +342,18 @@
     <script>
     document.addEventListener('DOMContentLoaded', () => {
 
-        const APP_ID = 53962513; // Ваш ID приложения
+        const APP_ID = 53962513; // <<< ВАЖНО: ВСТАВЬТЕ ID ВАШЕГО ПРИЛОЖЕНИЯ VK
         let vkUserId = null;
+
+        vkBridge.send('VKWebAppInit');
+        vkBridge.subscribe(e => {
+            if (e.detail.type === 'VKWebAppUpdateConfig') {
+                const safeArea = e.detail.data.insets;
+                if (safeArea) {
+                    app.style.paddingBottom = `${safeArea.bottom}px`;
+                }
+            }
+        });
 
         const canvas = document.getElementById('game-canvas');
         const ctx = canvas.getContext('2d');
@@ -397,7 +407,7 @@
 
         const sounds = {
             shoot: new Audio("data:audio/wav;base64,UklGRlgBAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQBAAD//wH//gD//f8B/f4A/f4A/v4A/v4A/v4A/v4A/P0A/P0A/P0A+v0A+f0A9/0A9/0A9v0A9f0A8/0A8v0A8P0A7v0A7f0A7P0A6/0A6v0A6P0A5/0A5v0A5P0A4/0A4v0A4P0A3/0A3f0A2/0A2v0A2P0A1/0A1f0A1P0A0/0A0f0A0P0Az/0AzP0Ay/0Ayv0AyP0Ax/0AxP0Aw/0Awv0AwP0Av/0AvP0Auv0Auv0AuP0At/0AtP0As/0Asv0AsP0Ar/0ArP0Aq/0Aqv0AqP0Ap/0ApP0Ao/0Aov0AoP0An/0AnP0Am/0Amv0AmP0Al/0AlP0Ak/0Akv0AkP0Aj/0AjP0Ai/0Aiv0AiP0Ah/0AhP0Ag/0Agv0AgP0Af/0AfP0Aev0Aev0AeP0Adv0AdP0Ac/0Acv0AcP0Ab/0AbP0Aav0Aav0AaP0A"),
-            pop: new Audio("data:audio/wav;base64,UklGRlIAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YUwAAAAA9/D58vLz8fH07u/07e/v7e/28fL09ff7/v8A/v8A//8A//8A//8A//8AAP8A/wAA/wD/AP8BAP8C/wP/A/8E/wP/BP8E/wP/BP8E/wP/A/8C/wL/Av8A/wD/AP8A/wD+/vr6+Pj3+Pf3+Pj4+fj4+fj49/f39/f39vX29fX1-fX29vb29/f4+Pj49/f39/f39/f3+Pj4+fj5+fn6+fr6+/v7+/v7+/v7+/v8/Pz8/Pz9/f39/f39/f7+/v7+/////wAA//8A//8A//8A//8A//8A//8A//8A//8A//8A//8A//8A//8A//8A/wD/AAAA//8A//8A//8A//8A/wAA/wD/AP8A/wD/AP8A/wD/AAAA/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AAAAAP8A/wD/AAAAAP///w=="),
+            pop: new Audio("data:audio/wav;base64,UklGRlIAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YUwAAAAA9/D58vLz8fH07u/07e/v7e/28fL09ff7/v8A/v8A//8A//8A//8A//8AAP8A/wAA/wD/AP8BAP8C/wP/A/8E/wP/BP8E/wP/BP8E/wP/A/8C/wL/Av8A/wD/AP8A/wD+/vr6+Pj3+Pf3+Pj4+fj4+fj49/f39/f39vX29fX19fX29vb29/f4+Pj49/f39/f39/f3+Pj4+fj5+fn6+fr6+/v7+/v7+/v7+/v8/Pz8/Pz9/f39/f39/f7+/v7+/////wAA//8A//8A//8A//8A//8A//8A//8A//8A//8A//8A//8A//8A//8A/wD/AAAA//8A//8A//8A//8A/wAA/wD/AP8A/wD/AP8A/wD/AAAA/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AAAAAP8A/wD/AAAAAP///w=="),
             drop: new Audio("data:audio/wav;base64,UklGRkgCAABXQVZFZm10IBAAAAABAAIARKwAAIhYAQAEABAAZGF0YQgCAAB9mZ+RjoyEgnp5eXRvbm5rbIiJiIeFgX59eXZzbnBramdpaGhpa2xra21ubm9wcHFyc3V2d3h5e3x9fn+AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeYmZqbnJ2en6ChoqOkpaanqKmqq6ytrq+wsbKztLW2t7i5uru8vb6/wMHCw8TFxsfIycrLzM3Oz9DR0tPU1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v8PHy8/T19vf4+fr7/P3+/w=="),
             combo: new Audio("data:audio/wav;base64,UklGRlQDAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQwDAACAgIaGh4iIiYmKioqKiYiIiIaGhoWFhYWExMTEysrKzMzMzc3Nzs7Ozs3NzMzMysrKxMTExMTEysrKzMzMzc3Nzs7Ozs3NzMzMysrKxMTExMTEysrKzMzMzc3Nzs7Ozs3NzMzMysrKxMTE")
         };
@@ -411,18 +421,6 @@
                 vkUserId = localStorage.getItem('guestUserId') || `guest_${Date.now()}`;
                 localStorage.setItem('guestUserId', vkUserId);
             }
-            vkBridge.subscribe(e => {
-                if (e.detail.type === 'VKWebAppUpdateConfig') {
-                    const vh = e.detail.data.viewport_height;
-                    const vsw = e.detail.data.viewport_width;
-                    if (vh && vsw) {
-                        const safeArea = e.detail.data.insets;
-                        if (safeArea) {
-                            app.style.paddingBottom = `${safeArea.bottom}px`;
-                        }
-                    }
-                }
-            });
             loadTheme();
             await loadStats();
             addEventListeners();
@@ -559,8 +557,8 @@
                 const newRowYOffset = yOffset - dropAnimation.target;
                 for (let c = 0; c < COLS; c++) {
                     if (dropAnimation.newRow[c]) {
-                        const pos = getPixelPos(0, c);
-                        drawBubble(pos.x, pos.y + newRowYOffset, bubbleRadius, dropAnimation.newRow[c].color);
+                        const pos = getPixelPos(-1, c);
+                        drawBubble(pos.x, pos.y + dropAnimation.progress, bubbleRadius, dropAnimation.newRow[c].color);
                     }
                 }
             }
@@ -614,6 +612,7 @@
                     sumY += pos.y;
                     grid[bubble.r][bubble.c] = null;
                 });
+                
                 score += matches.length * 10;
                 if (matches.length >= 4) {
                     playSound(sounds.combo);
@@ -824,12 +823,13 @@
             ctx.moveTo(x, y);
             const lineLength = currentMode === 'hard' ? canvas.height * 0.15 : canvas.height;
             for (let i = 0; i < 2; i++) {
-                const endPos = getTrajectoryEnd(x, y, angle, lineLength - (ctx.lineWidth/2));
+                const endPos = getTrajectoryEnd(x, y, angle, lineLength);
                 ctx.lineTo(endPos.x, endPos.y);
-                if (!endPos.bounce) break;
+                if (endPos.bounceType === 'none') break;
                 x = endPos.x;
                 y = endPos.y;
-                angle = -angle;
+                if (endPos.bounceType === 'vertical') { angle = Math.PI - angle; }
+                else { angle = -angle; }
             }
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
             ctx.lineWidth = 3;
@@ -841,11 +841,17 @@
             const cosA = Math.cos(angle);
             const sinA = Math.sin(angle);
             let t = length;
-            let bounce = false;
-            if (cosA > 0) { t = Math.min(t, (canvas.width - bubbleRadius - startX) / cosA); }
-            else if (cosA < 0) { t = Math.min(t, (bubbleRadius - startX) / cosA); }
-            if (t * Math.abs(cosA) < length) bounce = true;
-            return { x: startX + t * cosA, y: startY + t * sinA, bounce };
+            let bounceType = 'none';
+
+            let tX = Infinity, tY = Infinity;
+            if (cosA > 0) { tX = (canvas.width - bubbleRadius - startX) / cosA; }
+            else if (cosA < 0) { tX = (bubbleRadius - startX) / cosA; }
+            if (sinA < 0) { tY = (bubbleRadius - startY) / sinA; }
+            
+            if (tX < t) { t = tX; bounceType = 'vertical'; }
+            if (tY < t) { t = tY; bounceType = 'horizontal'; }
+
+            return { x: startX + t * cosA, y: startY + t * sinA, bounceType };
         }
 
         let aimAngle = null;
