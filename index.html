@@ -24,7 +24,7 @@
         html, body { height: 100%; overflow: hidden; }
         body {
             font-family: var(--font-family);
-            background: var(--bg-color);
+            background: var(--bg-color); /* This color will show as letterbox bars */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -32,12 +32,13 @@
             -webkit-user-select: none;
         }
         #app-container { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
+        
+        /* --- NEW: Perfect Aspect Ratio Styling --- */
         #app {
-            width: 100%;
-            height: 100%;
-            aspect-ratio: 9 / 18;
-            max-width: 450px;
-            max-height: 95vh;
+            aspect-ratio: 9 / 18; /* Strict aspect ratio */
+            height: 95vh; /* Max height is 95% of the viewport height */
+            max-width: 100vw; /* Max width is 100% of the viewport width */
+            
             display: flex;
             flex-direction: column;
             background: var(--game-area-bg);
@@ -47,6 +48,7 @@
             overflow: hidden;
             border: 5px solid #2a334a;
         }
+
         .screen { width: 100%; height: 100%; display: flex; flex-direction: column; }
         .hidden { display: none !important; }
         #main-menu-screen {
@@ -241,7 +243,7 @@
             vkBridge.subscribe(e => {
                 if (e.detail.type === 'VKWebAppUpdateConfig') {
                     const safeArea = e.detail.data.insets;
-                    if (safeArea) { document.getElementById('app').style.paddingBottom = `${safeArea.bottom}px`; }
+                    if (safeArea) { document.body.style.paddingBottom = `${safeArea.bottom}px`; }
                 }
             });
         } catch (e) {
@@ -281,12 +283,12 @@
         let aimAngle = null;
         let animationFrameId;
 
-        // --- NEW HQ Sound Effects ---
+        // --- HQ Sound Effects ---
         const sounds = {
-            shoot: new Audio("data:audio/wav;base64,UklGRlIAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YUgAAACAgIiIiIaGhoWFhIWEhISHh4eHh4eHh4eHh4iIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiI="),
-            pop: new Audio("data:audio/wav;base64,UklGRlAAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YUwAAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg-"),
-            drop: new Audio("data:audio/wav;base64,UklGRkIAAABXQVZFZm10IBAAAAABAAIARKwAAIhYAQAEABAAZGF0YUgAAAC0tLGtrqiimZ+VlZGOjYp/fHhwbWZgXVtYVFFOTEpHR0FAQj48OTc1NTMyMS8uLCsoKScoJSUjIiEgHx4cGhsaFhUTERAQDgsJBwQCAQAAAP///////////v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v-"),
-            combo: new Audio("data:audio/wav;base-a64,UklGRkgBAABXQVZFZm10IBAAAAABAAIARKwAAIhYAQAEABAAZGF0YSAAAAAA//8B/wL/A/8E/wX/Bv8H/wj/Cf8K/wv/DP8N/w7/D/8Q/xH/Ev8T/xT/Ff8W/xf/GP8Z/xr/G/8c/x3/Hv8f/yD/If8i/yP/JP8l/yb/J/8o/yn/KqAsATIApgLaAtEDLgMbA5kDuwPiA7wDYwNHA3YDawOPBDAFHgUqBSkFGQXcAG0BigJqAn0CfgNeA7wDBwR8BKkEyATBAyIDcwOdA8EDeQNcA5MCeAJnAloCXgJiAlUCVgJTAk0CSgJFAl8CQwI/AjcCMQIqAioCKgIqAioCIQIfAhYCFQIUAhECEQIPAgwCCgIHAgQCAwECAP//+fn5+vr6+/v7/Pz8/f39/v7+/v7+/v7+/Pz8/f39/vr6/PLy8fDw7+/u7e3t7e3t7e3t7e3s6+vr6urq6urq6Ojo6Ojn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn-")
+            shoot: new Audio("data:audio/wav;base64,UklGRlIAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YUgAAACAgIiIiIaGhoWFhIWEhISHh4eHh4eHh4eHh4iIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiI="),
+            pop: new Audio("data:audio/wav;base64,UklGRlAAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YUwAAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg-"),
+            drop: new Audio("data:audio/wav;base64,UklGRkIAAABXQVZFZm10IBAAAAABAAIARKwAAIhYAQAEABAAZGF0YUgAAAC0tLGtrqiimZ+VlZGOjYp/fHhwbWZgXVtYVFFOTEpHR0FAQj48OTc1NTMyMS8uLCsoKScoJSUjIiEgHx4cGhsaFhUTERAQDgsJBwQCAQAAAP///////////v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v-"),
+            combo: new Audio("data:audio/wav;base64,UklGRkgBAABXQVZFZm10IBAAAAABAAIARKwAAIhYAQAEABAAZGF0YSAAAAAA//8B/wL/A/8E/wX/Bv8H/wj/Cf8K/wv/DP8N/w7/D/8Q/xH/Ev8T/xT/Ff8W/xf/GP8Z/xr/G/8c/x3/Hv8f/yD/If8i/yP/JP8l/yb/J/8o/yn/KqAsATIApgLaAtEDLgMbA5kDuwPiA7wDYwNHA3YDawOPBDAFHgUqBSkFGQXcAG0BigJqAn0CfgNeA7wDBwR8BKkEyATBAyIDcwOdA8EDeQNcA5MCeAJnAloCXgJiAlUCVgJTAk0CSgJFAl8CQwI/AjcCMQIqAioCKgIqAioCIQIfAhYCFQIUAhECEQIPAgwCCgIHAgQCAwECAP//+fn5+vr6+/v7/Pz8/f39/v7+/v7+/v7+/Pz8/f39/vr6/PLy8fDw7+/u7e3t7e3t7e3t7e3s6+vr6urq6urq6Ojo6Ojn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn-")
         };
         
         function playSound(sound) {
@@ -297,69 +299,84 @@
             }
         }
 
+        // --- NEW: Ads logic is back ---
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
             document.getElementById(screenId).classList.remove('hidden');
+
+            try {
+                if (screenId === 'main-menu-screen' || screenId === 'game-screen') {
+                    vkBridge.send('VKWebAppShowBannerAd', { banner_location: 'bottom' }).catch(e => console.error("Banner Ad Error:", e));
+                } else {
+                    vkBridge.send('VKWebAppHideBannerAd').catch(e => console.error("Banner Ad Error:", e));
+                }
+            } catch(e) { /* silent fail if bridge is not available */ }
         }
         
         // --- Game Setup ---
         function setGameSize() {
-            const availableHeight = app.clientHeight - uiOverlay.offsetHeight;
-            gameContainer.style.height = `${availableHeight}px`;
-            
-            const ratio = window.devicePixelRatio || 1;
-            canvas.width = gameContainer.clientWidth * ratio;
-            canvas.height = gameContainer.clientHeight * ratio;
-            canvas.style.width = `${gameContainer.clientWidth}px`;
-            canvas.style.height = `${gameContainer.clientHeight}px`;
-            ctx.scale(ratio, ratio);
+            // Set canvas drawing surface size based on device pixel ratio for sharp graphics
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
 
+            // Set bubble radius based on the logical size of the container
             bubbleRadius = gameContainer.clientWidth / (COLS * 2);
 
+            // Redraw if game is active
             if (!isGameOver && !isPaused) draw();
         }
 
         function initGame(mode) {
             if (animationFrameId) cancelAnimationFrame(animationFrameId);
 
-            showScreen('game-screen');
-            currentMode = mode;
+            // Reset game state
             isGameOver = false;
             isPaused = false;
-            
-            setGameSize();
-            
-            const maxRows = Math.floor(gameContainer.clientHeight / (bubbleRadius * 2 * HEX_V_SPACING_FACTOR));
-            grid = new Array(maxRows).fill(null).map(() => new Array(COLS).fill(null));
-            projectiles = [];
+            currentMode = mode;
             score = 0;
+            projectiles = [];
             shotsSinceDrop = 0;
             
             const modeTitles = { classic: 'Классика', colorChaos: 'Хаос Цветов', doubleShot: 'Дабл Шот' };
             gameTitleDisplay.textContent = modeTitles[mode] || 'Игра';
-
+            
+            // Show correct UI elements for the mode
             document.getElementById('launcher-base').style.display = (currentMode === 'doubleShot') ? 'none' : 'block';
             document.getElementById('shots-left-display').style.display = (currentMode === 'classic') ? 'flex' : 'none';
 
-            let colorsOnGrid = false;
-            for (let r = 0; r < START_ROWS; r++) {
-                for (let c = 0; c < COLS; c++) {
-                    if (r % 2 === 1 && c === COLS - 1) continue;
-                    grid[r][c] = { color: BUBBLE_COLORS[Math.floor(Math.random() * BUBBLE_COLORS.length)], scale: 0 };
-                    colorsOnGrid = true;
-                }
-            }
-
-            if (colorsOnGrid) {
-                currentBubble = { color: pickRandomColorFromGrid() };
-                nextBubble = { color: pickRandomColorFromGrid() };
-            } else {
-                endGame(true); // Win if no bubbles to start
-                return;
-            }
+            // Switch to the game screen
+            showScreen('game-screen');
             
-            updateUI();
-            gameLoop();
+            // --- CRITICAL FIX: Initialize the grid AFTER the screen is visible ---
+            requestAnimationFrame(() => {
+                setGameSize(); // Now the dimensions are correct
+
+                const maxRows = Math.floor(gameContainer.clientHeight / (bubbleRadius * 2 * HEX_V_SPACING_FACTOR));
+                grid = new Array(maxRows).fill(null).map(() => new Array(COLS).fill(null));
+
+                let colorsOnGrid = false;
+                for (let r = 0; r < START_ROWS; r++) {
+                    for (let c = 0; c < COLS; c++) {
+                        if (r % 2 === 1 && c === COLS - 1) continue;
+                        grid[r][c] = { color: BUBBLE_COLORS[Math.floor(Math.random() * BUBBLE_COLORS.length)], scale: 0 };
+                        colorsOnGrid = true;
+                    }
+                }
+
+                if (colorsOnGrid) {
+                    currentBubble = { color: pickRandomColorFromGrid() };
+                    nextBubble = { color: pickRandomColorFromGrid() };
+                } else {
+                    endGame(true); // Win if no bubbles to start
+                    return;
+                }
+                
+                updateUI();
+                gameLoop();
+            });
         }
         
         function updateUI() {
@@ -396,7 +413,6 @@
         }
 
         function update() {
-            // Update bubble pop animation scale
             for(let r=0; r<grid.length; r++) {
                 for(let c=0; c<COLS; c++) {
                     const bubble = grid[r][c];
@@ -441,6 +457,7 @@
         }
 
         function draw() {
+            const dpr = window.devicePixelRatio || 1;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
             drawGrid();
@@ -484,7 +501,7 @@
             }
             
             if (projectiles.length === 0) {
-                 if (!snapPos) shotsSinceDrop++; // Count as a miss if it doesn't snap
+                 if (!snapPos) shotsSinceDrop++;
                  await checkDropAndNextTurn();
             }
         }
@@ -493,12 +510,10 @@
             const matches = findMatches(r, c);
             if (matches.length >= 3) {
                 playSound(sounds.pop);
-                let comboScore = 0;
                 matches.forEach(bubble => {
                     grid[bubble.r][bubble.c] = null;
-                    comboScore += 10;
+                    score += 10;
                 });
-                score += comboScore;
                 
                 await new Promise(resolve => setTimeout(resolve, 50));
                 
@@ -509,8 +524,7 @@
                 }
 
                 if(matches.length > 3 || dropped.length > 0) playSound(sounds.combo);
-
-                shotsSinceDrop = 0; // Reset counter on successful match
+                shotsSinceDrop = 0;
             } else {
                  if(projectiles.length === 0) shotsSinceDrop++;
             }
@@ -524,7 +538,7 @@
                 shotsSinceDrop = 0;
             }
             
-            if (currentMode === 'colorChaos') {
+            if (currentMode === 'colorChaos' && projectiles.length === 0) {
                 randomizeAllBubbleColors();
             }
 
@@ -587,25 +601,21 @@
             let path = [{x: startX, y: startY}];
             let x = startX, y = startY, currentAngle = angle;
             
-            for (let i = 0; i < 2; i++) { // Max 1 bounce
+            for (let i = 0; i < 2; i++) {
                 const cosA = Math.cos(currentAngle);
                 const sinA = Math.sin(currentAngle);
                 let t = Infinity;
 
-                // Side walls
                 if (cosA > 0) t = Math.min(t, (gameContainer.clientWidth - bubbleRadius - x) / cosA);
                 else if (cosA < 0) t = Math.min(t, (bubbleRadius - x) / cosA);
                 
-                // Top wall (no bounce for simplicity, just show where it would hit)
                 if (sinA < 0) t = Math.min(t, (bubbleRadius - y) / sinA);
 
-                // Check for collision with existing bubbles along the path
                 let hit = false;
                 for (let r = 0; r < grid.length && !hit; r++) {
                     for (let c = 0; c < COLS && !hit; c++) {
                         if (grid[r][c]) {
                             const bubblePos = getPixelPos(r, c);
-                            // Simple line-circle intersection test
                             const a = cosA * cosA + sinA * sinA;
                             const b = 2 * (cosA * (x - bubblePos.x) + sinA * (y - bubblePos.y));
                             const cc = (x - bubblePos.x) ** 2 + (y - bubblePos.y) ** 2 - (bubbleRadius * 2) ** 2;
@@ -625,12 +635,10 @@
                 y += sinA * t;
                 path.push({x, y});
                 
-                if (hit) break; // Stop trajectory at first bubble hit
-
-                if (y <= bubbleRadius) break; // Stop at top wall
-                
+                if (hit) break;
+                if (y <= bubbleRadius) break;
                 if (x <= bubbleRadius || x >= gameContainer.clientWidth - bubbleRadius) {
-                    currentAngle = Math.PI - currentAngle; // Bounce off side wall
+                    currentAngle = Math.PI - currentAngle;
                 } else {
                     break;
                 }
@@ -647,7 +655,6 @@
                 isAiming = true;
                 updateAim(e);
                 e.preventDefault();
-
                 window.addEventListener('mousemove', handlePointerMove);
                 window.addEventListener('mouseup', handlePointerUp);
                 window.addEventListener('touchmove', handlePointerMove, { passive: false });
@@ -724,10 +731,7 @@
                         const dx = x - pos.x;
                         const dy = y - pos.y;
                         const distSq = dx * dx + dy * dy;
-
-                        // Give priority to slots closer to the top
                         const effectiveDistSq = distSq - r * 100;
-
                         if (effectiveDistSq < minDistSq) {
                             minDistSq = effectiveDistSq;
                             closest = { r, c };
@@ -742,11 +746,10 @@
             const neighbors = [];
             const isOddRow = r % 2 === 1;
             const directions = [
-                { dr: -1, dc: isOddRow ? 0 : -1 }, { dr: -1, dc: isOddRow ? 1 : 0 }, // Top-left, Top-right
-                { dr: 0, dc: -1 }, { dr: 0, dc: 1 },                                 // Left, Right
-                { dr: 1, dc: isOddRow ? 0 : -1 }, { dr: 1, dc: isOddRow ? 1 : 0 }    // Bottom-left, Bottom-right
+                { dr: -1, dc: isOddRow ? 0 : -1 }, { dr: -1, dc: isOddRow ? 1 : 0 },
+                { dr: 0, dc: -1 }, { dr: 0, dc: 1 },
+                { dr: 1, dc: isOddRow ? 0 : -1 }, { dr: 1, dc: isOddRow ? 1 : 0 }
             ];
-
             for (const dir of directions) {
                 const nr = r + dir.dr;
                 const nc = c + dir.dc;
@@ -759,16 +762,13 @@
         
         function findMatches(startR, startC) {
             if (!grid[startR] || !grid[startR][startC]) return [];
-
             const targetColor = grid[startR][startC].color;
             const toVisit = [{ r: startR, c: startC }];
             const visited = new Set([`${startR},${startC}`]);
             const matches = [];
-
             while (toVisit.length > 0) {
                 const current = toVisit.pop();
                 matches.push(current);
-
                 const neighbors = getNeighbors(current.r, current.c);
                 for (const neighbor of neighbors) {
                     const key = `${neighbor.r},${neighbor.c}`;
@@ -784,29 +784,20 @@
         async function findFloatingBubbles() {
             const supported = new Set();
             const toVisit = [];
-
             for (let c = 0; c < COLS; c++) {
                 if (grid[0][c]) {
                     const key = `0,${c}`;
-                    if (!supported.has(key)) {
-                        supported.add(key);
-                        toVisit.push({ r: 0, c });
-                    }
+                    if (!supported.has(key)) { supported.add(key); toVisit.push({ r: 0, c }); }
                 }
             }
-
             while (toVisit.length > 0) {
                 const current = toVisit.pop();
                 const neighbors = getNeighbors(current.r, current.c);
                 for (const neighbor of neighbors) {
                     const key = `${neighbor.r},${neighbor.c}`;
-                    if (!supported.has(key)) {
-                        supported.add(key);
-                        toVisit.push(neighbor);
-                    }
+                    if (!supported.has(key)) { supported.add(key); toVisit.push(neighbor); }
                 }
             }
-
             const floating = [];
             for (let r = 0; r < grid.length; r++) {
                 for (let c = 0; c < COLS; c++) {
@@ -821,30 +812,29 @@
 
         function addNewRow() {
             return new Promise(resolve => {
-                grid.pop(); // Remove the last row
+                grid.pop();
                 const newRow = new Array(COLS).fill(null);
                 for (let c = 0; c < COLS; c++) {
                     newRow[c] = { color: BUBBLE_COLORS[Math.floor(Math.random() * BUBBLE_COLORS.length)], scale: 1 };
                 }
-                grid.unshift(newRow); // Add a new row at the top
+                grid.unshift(newRow);
+                if(checkWinLose()) return;
                 resolve();
             });
         }
         
         function checkWinLose() {
-            // Check for lose condition
             const lastRowIndex = grid.length - 1;
             for(let c = 0; c < COLS; c++) {
-                if(grid[lastRowIndex][c]) {
+                if(grid[lastRowIndex]?.[c]) {
                     endGame(false);
-                    return true; // Game is over
+                    return true;
                 }
             }
-            // Check for win condition
             const hasBubbles = grid.some(row => row.some(b => b !== null));
-            if (!hasBubbles) {
+            if (!hasBubbles && !isGameOver) {
                 endGame(true);
-                return true; // Game is over
+                return true;
             }
             return false;
         }
@@ -854,12 +844,7 @@
             isGameOver = true;
             cancelAnimationFrame(animationFrameId);
             
-            // Save score
-            if (score > (stats[currentMode] || 0)) {
-                stats[currentMode] = score;
-                // saveStats(); //
-            }
-
+            if (score > (stats[currentMode] || 0)) { stats[currentMode] = score; }
             const modal = document.getElementById('end-game-modal');
             document.getElementById('end-game-title').textContent = isWin ? "Победа!" : "Проигрыш";
             document.getElementById('final-score').textContent = score;
@@ -878,13 +863,10 @@
             const currentRadius = r * scale;
             ctx.save();
             ctx.translate(x, y);
-            ctx.scale(scale, scale);
-            
             const grad = ctx.createRadialGradient(-r * 0.3, -r * 0.3, r * 0.1, 0, 0, r);
             grad.addColorStop(0, 'rgba(255,255,255,0.8)');
             grad.addColorStop(0.7, color);
             grad.addColorStop(1, color);
-
             ctx.beginPath();
             ctx.arc(0, 0, currentRadius - 2, 0, Math.PI * 2);
             ctx.fillStyle = grad;
@@ -899,34 +881,16 @@
             canvas.addEventListener('mousedown', handlePointerDown);
             canvas.addEventListener('touchstart', handlePointerDown, { passive: false });
             app.addEventListener('contextmenu', e => e.preventDefault());
-
-            document.querySelectorAll('.menu-button[data-mode]').forEach(btn => {
-                btn.addEventListener('click', () => initGame(btn.dataset.mode));
-            });
-            
+            document.querySelectorAll('.menu-button[data-mode]').forEach(btn => btn.addEventListener('click', () => initGame(btn.dataset.mode)));
             document.getElementById('stats-btn').addEventListener('click', () => {
                 document.getElementById('stats-classic').textContent = stats.classic || 0;
                 document.getElementById('stats-colorChaos').textContent = stats.colorChaos || 0;
                 document.getElementById('stats-doubleShot').textContent = stats.doubleShot || 0;
                 document.getElementById('stats-modal').classList.add('visible');
             });
-
-            document.getElementById('close-stats-btn').addEventListener('click', () => {
-                document.getElementById('stats-modal').classList.remove('visible');
-            });
-            
-            document.getElementById('pause-btn').addEventListener('click', () => {
-                if(!isGameOver) {
-                    isPaused = true;
-                    document.getElementById('pause-modal').classList.add('visible');
-                }
-            });
-
-            document.getElementById('resume-btn').addEventListener('click', () => {
-                isPaused = false;
-                document.getElementById('pause-modal').classList.remove('visible');
-            });
-            
+            document.getElementById('close-stats-btn').addEventListener('click', () => document.getElementById('stats-modal').classList.remove('visible'));
+            document.getElementById('pause-btn').addEventListener('click', () => { if(!isGameOver) { isPaused = true; document.getElementById('pause-modal').classList.add('visible'); }});
+            document.getElementById('resume-btn').addEventListener('click', () => { isPaused = false; document.getElementById('pause-modal').classList.remove('visible'); });
             const restart = () => {
                 document.getElementById('pause-modal').classList.remove('visible');
                 document.getElementById('end-game-modal').classList.remove('visible');
@@ -934,7 +898,6 @@
             };
             document.getElementById('restart-pause-btn').addEventListener('click', restart);
             document.getElementById('restart-end-btn').addEventListener('click', restart);
-            
             const toMenu = () => {
                 isGameOver = true;
                 if(animationFrameId) cancelAnimationFrame(animationFrameId);
@@ -944,7 +907,6 @@
             };
             document.getElementById('main-menu-btn').addEventListener('click', toMenu);
             document.getElementById('main-menu-end-btn').addEventListener('click', toMenu);
-
             const soundBtn = document.getElementById('sound-btn');
             const soundOnIcon = document.getElementById('sound-on-icon');
             const soundOffIcon = document.getElementById('sound-off-icon');
@@ -953,7 +915,6 @@
                 soundOnIcon.classList.toggle('hidden', !soundEnabled);
                 soundOffIcon.classList.toggle('hidden', soundEnabled);
             });
-            
             window.addEventListener('resize', setGameSize);
         }
         
