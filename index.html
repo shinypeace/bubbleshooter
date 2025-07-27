@@ -7,7 +7,7 @@
     <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #63c6ff;
@@ -15,7 +15,7 @@
             --text-color: #ffffff;
             --header-bg: #00a2ff;
             --shadow-color: rgba(0, 0, 0, 0.2);
-            --font-family: 'Fredoka One', cursive;
+            --font-family: 'Nunito', sans-serif;
             --primary-button-bg: #ffda47;
             --primary-button-color: #a15800;
             --secondary-button-bg: #ffffff;
@@ -69,6 +69,7 @@
             color: var(--text-color);
             text-shadow: 3px 3px 0px rgba(0,0,0,0.15);
             margin-bottom: 20px;
+            font-weight: 900;
         }
         .menu-buttons {
             display: flex;
@@ -82,6 +83,7 @@
             color: var(--primary-button-color);
             font-family: var(--font-family);
             font-size: 1.5rem;
+            font-weight: 900;
             border: none;
             border-radius: 15px;
             padding: 15px;
@@ -133,6 +135,7 @@
             flex-grow: 1;
             text-align: center;
             padding: 0 5px;
+            font-weight: 700;
         }
 
         #score-display {
@@ -141,6 +144,7 @@
             padding: 5px 15px;
             border-radius: 20px;
             border: 2px solid var(--text-color);
+            font-weight: 700;
         }
 
         #game-container {
@@ -237,8 +241,8 @@
         }
 
         .modal-overlay.visible .modal-content { transform: scale(1); }
-        .modal-content h2 { font-size: 2.5rem; margin-bottom: 10px; }
-        .modal-content p { font-size: 1.2rem; margin-bottom: 20px; }
+        .modal-content h2 { font-size: 2.5rem; margin-bottom: 10px; font-weight: 900; }
+        .modal-content p { font-size: 1.2rem; margin-bottom: 20px; font-weight: 700; }
         
         .modal-button {
             background: var(--text-color);
@@ -248,6 +252,7 @@
             border-radius: 15px;
             font-family: var(--font-family);
             font-size: 1.2rem;
+            font-weight: 700;
             cursor: pointer;
             transition: transform 0.2s;
             text-shadow: none;
@@ -345,16 +350,6 @@
         const APP_ID = 53962513; // <<< ВАЖНО: ВСТАВЬТЕ ID ВАШЕГО ПРИЛОЖЕНИЯ VK
         let vkUserId = null;
 
-        vkBridge.send('VKWebAppInit');
-        vkBridge.subscribe(e => {
-            if (e.detail.type === 'VKWebAppUpdateConfig') {
-                const safeArea = e.detail.data.insets;
-                if (safeArea) {
-                    app.style.paddingBottom = `${safeArea.bottom}px`;
-                }
-            }
-        });
-
         const canvas = document.getElementById('game-canvas');
         const ctx = canvas.getContext('2d');
 
@@ -412,7 +407,7 @@
             combo: new Audio("data:audio/wav;base64,UklGRlQDAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQwDAACAgIaGh4iIiYmKioqKiYiIiIaGhoWFhYWExMTEysrKzMzMzc3Nzs7Ozs3NzMzMysrKxMTExMTEysrKzMzMzc3Nzs7Ozs3NzMzMysrKxMTExMTEysrKzMzMzc3Nzs7Ozs3NzMzMysrKxMTE")
         };
 
-        async function init() {
+        async function initVK() {
             try {
                 await vkBridge.send('VKWebAppInit');
                 const user = await vkBridge.send('VKWebAppGetUserInfo');
@@ -421,10 +416,21 @@
                 vkUserId = localStorage.getItem('guestUserId') || `guest_${Date.now()}`;
                 localStorage.setItem('guestUserId', vkUserId);
             }
-            loadTheme();
+            vkBridge.subscribe(e => {
+                if (e.detail.type === 'VKWebAppUpdateConfig') {
+                    const safeArea = e.detail.data.insets;
+                    if (safeArea && safeArea.bottom > 0) {
+                        app.style.height = `calc(100% - ${safeArea.bottom}px)`;
+                        app.style.paddingBottom = `0px`;
+                    } else {
+                        app.style.height = `100%`;
+                        app.style.paddingBottom = `0px`;
+                    }
+                }
+            });
             await loadStats();
-            addEventListeners();
             showScreen('main-menu-screen');
+            vkBridge.send('VKWebAppShowBannerAd', { banner_location: 'bottom' }).catch(e => console.error(e));
         }
 
         async function saveStats() {
@@ -472,7 +478,7 @@
             
             const modeTitles = { classic: 'Классика', hard: 'Хард-режим', clearTheTop: 'Очистка' };
             gameTitleDisplay.textContent = modeTitles[mode];
-            document.getElementById('shots-left-display').style.visibility = 'visible';
+            document.getElementById('shots-left-display').style.visibility = (mode !== 'clearTheTop') ? 'visible' : 'hidden';
 
             for (let r = 0; r < START_ROWS; r++) {
                 for (let c = 0; c < COLS; c++) {
@@ -486,7 +492,6 @@
             
             updateUI();
             requestAnimationFrame(gameLoop);
-            vkBridge.send('VKWebAppShowBannerAd', { banner_location: 'bottom' }).catch(e => console.error(e));
         }
         
         function setCanvasSize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
@@ -612,7 +617,6 @@
                     sumY += pos.y;
                     grid[bubble.r][bubble.c] = null;
                 });
-                
                 score += matches.length * 10;
                 if (matches.length >= 4) {
                     playSound(sounds.combo);
@@ -633,6 +637,7 @@
         }
         
         function checkDrop() {
+            if (currentMode === 'clearTheTop') return;
             const shotsUntilDrop = (currentMode === 'hard') ? SHOTS_UNTIL_DROP_HARD : SHOTS_UNTIL_DROP_CLASSIC;
             if(shotsSinceDrop >= shotsUntilDrop) {
                 addNewRow();
@@ -651,7 +656,7 @@
             const rowHeight = bubbleRadius * Math.sqrt(3);
             dropAnimation.newRow = new Array(COLS).fill(null).map((_, c) => ({ color: BUBBLE_COLORS[Math.floor(Math.random() * BUBBLE_COLORS.length)] }));
             dropAnimation.target = rowHeight;
-            dropAnimation.speed = rowHeight / 20; // Animation over 20 frames
+            dropAnimation.speed = rowHeight / 20;
             playSound(sounds.drop);
         }
 
@@ -666,8 +671,7 @@
             const lastRowIdx = grid.length - 1;
             for (let c = 0; c < COLS; c++) { if (grid[lastRowIdx][c]) { endGame(false); return; } }
             
-            let bubblesLeft = false;
-            grid.forEach(row => row.forEach(bubble => { if (bubble) bubblesLeft = true; }));
+            let bubblesLeft = grid.some(row => row.some(bubble => bubble));
             if (!bubblesLeft) { endGame(true); }
 
             if(currentMode === 'clearTheTop') {
@@ -680,19 +684,16 @@
         function endGame(isWin) {
             if(isGameOver) return;
             isGameOver = true;
-            
             if (isWin) {
                 endGameTitle.textContent = "Победа!";
             } else {
                 endGameTitle.textContent = "Проигрыш";
                 onGameEnd();
             }
-            
             if (score > (stats[currentMode] || 0)) {
                 stats[currentMode] = score;
                 saveStats();
             }
-            
             finalScore.textContent = score;
             endGameModal.classList.add('visible');
         }
@@ -816,20 +817,16 @@
         
         function drawAimingLine(startX, startY) {
             if (!aimAngle) return;
-            let x = startX, y = startY;
-            let angle = aimAngle;
+            let x = startX, y = startY, angle = aimAngle;
             ctx.beginPath();
             ctx.setLineDash([4, 8]);
             ctx.moveTo(x, y);
-            const lineLength = currentMode === 'hard' ? canvas.height * 0.15 : canvas.height;
-            for (let i = 0; i < 2; i++) {
-                const endPos = getTrajectoryEnd(x, y, angle, lineLength);
-                ctx.lineTo(endPos.x, endPos.y);
-                if (endPos.bounceType === 'none') break;
-                x = endPos.x;
-                y = endPos.y;
-                if (endPos.bounceType === 'vertical') { angle = Math.PI - angle; }
-                else { angle = -angle; }
+            const maxReflections = (currentMode === 'hard') ? 0 : 2;
+            for (let i = 0; i <= maxReflections; i++) {
+                const { newX, newY, newAngle, hitWall } = getReflectionPoint(x, y, angle);
+                ctx.lineTo(newX, newY);
+                if (!hitWall) break;
+                x = newX; y = newY; angle = newAngle;
             }
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
             ctx.lineWidth = 3;
@@ -837,21 +834,28 @@
             ctx.setLineDash([]);
         }
 
-        function getTrajectoryEnd(startX, startY, angle, length) {
-            const cosA = Math.cos(angle);
-            const sinA = Math.sin(angle);
-            let t = length;
-            let bounceType = 'none';
-
-            let tX = Infinity, tY = Infinity;
-            if (cosA > 0) { tX = (canvas.width - bubbleRadius - startX) / cosA; }
-            else if (cosA < 0) { tX = (bubbleRadius - startX) / cosA; }
-            if (sinA < 0) { tY = (bubbleRadius - startY) / sinA; }
+        function getReflectionPoint(x, y, angle) {
+            const cos = Math.cos(angle);
+            const sin = Math.sin(angle);
+            let t = Infinity;
+            let hitWall = false;
+            let newAngle = angle;
             
-            if (tX < t) { t = tX; bounceType = 'vertical'; }
-            if (tY < t) { t = tY; bounceType = 'horizontal'; }
+            if (cos > 0) { t = Math.min(t, (canvas.width - bubbleRadius - x) / cos); } 
+            else if (cos < 0) { t = Math.min(t, (bubbleRadius - x) / cos); }
+            if (sin < 0) { t = Math.min(t, (bubbleRadius - y) / sin); }
 
-            return { x: startX + t * cosA, y: startY + t * sinA, bounceType };
+            const endX = x + t * cos;
+            const endY = y + t * sin;
+
+            if (Math.abs(endX - bubbleRadius) < 0.01 || Math.abs(endX - (canvas.width - bubbleRadius)) < 0.01) {
+                newAngle = Math.PI - angle;
+                hitWall = true;
+            } else if (Math.abs(endY - bubbleRadius) < 0.01) {
+                newAngle = -angle;
+                hitWall = true;
+            }
+            return { newX: endX, newY: endY, newAngle, hitWall };
         }
 
         let aimAngle = null;
@@ -863,9 +867,8 @@
         }
         function handlePointerMove(e) { if (isAiming) { updateAim(e); } }
         function handlePointerUp(e) {
-            if (!isAiming) return;
+            if (!isAiming || isShooting || isGameOver || !aimAngle) return;
             isAiming = false;
-            if (isShooting || isGameOver || !aimAngle) return;
             playSound(sounds.shoot);
             isShooting = true;
             const speed = 15;
@@ -899,10 +902,10 @@
             statsModal.classList.add('visible');
         });
         closeStatsBtn.addEventListener('click', () => statsModal.classList.remove('visible'));
-        pauseBtn.addEventListener('click', () => { isPaused = true; vkBridge.send('VKWebAppHideBannerAd'); pauseModal.classList.add('visible'); });
-        resumeBtn.addEventListener('click', () => { isPaused = false; vkBridge.send('VKWebAppShowBannerAd', {banner_location: 'bottom'}); pauseModal.classList.remove('visible'); requestAnimationFrame(gameLoop); });
+        pauseBtn.addEventListener('click', () => { isPaused = true; pauseModal.classList.add('visible'); });
+        resumeBtn.addEventListener('click', () => { isPaused = false; pauseModal.classList.remove('visible'); requestAnimationFrame(gameLoop); });
         restartPauseBtn.addEventListener('click', () => { pauseModal.classList.remove('visible'); initGame(currentMode); });
-        mainMenuBtn.addEventListener('click', () => { pauseModal.classList.remove('visible'); showScreen('main-menu-screen'); });
+        mainMenuBtn.addEventListener('click', () => { pauseModal.classList.remove('visible'); showScreen('main-menu-screen'); vkBridge.send('VKWebAppShowBannerAd', { banner_location: 'bottom' }); });
         extraLifeBtn.addEventListener('click', async () => {
              try {
                 const adData = await vkBridge.send('VKWebAppShowRewardAd', {});
@@ -912,7 +915,6 @@
                     gameOverModal.classList.add('hidden');
                     isGameOver = false;
                     requestAnimationFrame(gameLoop);
-                    vkBridge.send('VKWebAppShowBannerAd', {banner_location: 'bottom'});
                 }
             } catch (e) { console.error("Rewarded ad error:", e); }
         });
@@ -923,7 +925,12 @@
             soundOnIcon.classList.toggle('hidden', !soundEnabled);
             soundOffIcon.classList.toggle('hidden', soundEnabled);
         });
-        window.addEventListener('resize', debounce(() => initGame(currentMode), 250));
+        window.addEventListener('resize', debounce(() => {
+            if(!gameScreen.classList.contains('hidden')) {
+                setCanvasSize();
+                initGame(currentMode);
+            }
+        }, 250));
 
         init();
     });
