@@ -151,6 +151,11 @@
             width: 100%;
             flex-grow: 1;
             position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            aspect-ratio: 9 / 16; /* Строгое соотношение сторон для всего игрового поля */
         }
         
         #game-canvas {
@@ -347,7 +352,7 @@
     <script>
     document.addEventListener('DOMContentLoaded', () => {
 
-        const APP_ID = 53962513; // <<< ВАЖНО: ВСТАВЬТЕ ID ВАШЕГО ПРИЛОЖЕНИЯ VK
+        const APP_ID = 0; // <<< ВАЖНО: ВСТАВЬТЕ ID ВАШЕГО ПРИЛОЖЕНИЯ VK
         let vkUserId = null;
 
         const canvas = document.getElementById('game-canvas');
@@ -399,6 +404,7 @@
         let dropAnimation = { newRow: null, progress: 0, target: 0, speed: 0 };
         let stats = { classic: 0, clearTheTop: 0, hard: 0 };
         let gamesPlayedSinceAd = 0;
+        let aimAngle = null;
 
         const sounds = {
             shoot: new Audio("data:audio/wav;base64,UklGRlgBAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQBAAD//wH//gD//f8B/f4A/f4A/v4A/v4A/v4A/v4A/P0A/P0A/P0A+v0A+f0A9/0A9/0A9v0A9f0A8/0A8v0A8P0A7v0A7f0A7P0A6/0A6v0A6P0A5/0A5v0A5P0A4/0A4v0A4P0A3/0A3f0A2/0A2v0A2P0A1/0A1f0A1P0A0/0A0f0A0P0Az/0AzP0Ay/0Ayv0AyP0Ax/0AxP0Aw/0Awv0AwP0Av/0AvP0Auv0Auv0AuP0At/0AtP0As/0Asv0AsP0Ar/0ArP0Aq/0Aqv0AqP0Ap/0ApP0Ao/0Aov0AoP0An/0AnP0Am/0Amv0AmP0Al/0AlP0Ak/0Akv0AkP0Aj/0AjP0Ai/0Aiv0AiP0Ah/0AhP0Ag/0Agv0AgP0Af/0AfP0Aev0Aev0AeP0Adv0AdP0Ac/0Acv0AcP0Ab/0AbP0Aav0Aav0AaP0A"),
@@ -407,7 +413,7 @@
             combo: new Audio("data:audio/wav;base64,UklGRlQDAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQwDAACAgIaGh4iIiYmKioqKiYiIiIaGhoWFhYWExMTEysrKzMzMzc3Nzs7Ozs3NzMzMysrKxMTExMTEysrKzMzMzc3Nzs7Ozs3NzMzMysrKxMTExMTEysrKzMzMzc3Nzs7Ozs3NzMzMysrKxMTE")
         };
 
-        async function initVK() {
+        async function init() {
             try {
                 await vkBridge.send('VKWebAppInit');
                 const user = await vkBridge.send('VKWebAppGetUserInfo');
@@ -419,18 +425,15 @@
             vkBridge.subscribe(e => {
                 if (e.detail.type === 'VKWebAppUpdateConfig') {
                     const safeArea = e.detail.data.insets;
-                    if (safeArea && safeArea.bottom > 0) {
-                        app.style.height = `calc(100% - ${safeArea.bottom}px)`;
-                        app.style.paddingBottom = `0px`;
-                    } else {
-                        app.style.height = `100%`;
-                        app.style.paddingBottom = `0px`;
+                    if (safeArea && safeArea.bottom >= 0) {
+                        app.style.paddingBottom = `${safeArea.bottom}px`;
                     }
                 }
             });
+            loadTheme();
             await loadStats();
+            addEventListeners();
             showScreen('main-menu-screen');
-            vkBridge.send('VKWebAppShowBannerAd', { banner_location: 'bottom' }).catch(e => console.error(e));
         }
 
         async function saveStats() {
@@ -445,15 +448,16 @@
         
         async function loadStats() {
             const storageKey = `bubble_stats_${vkUserId}`;
+            let localData = localStorage.getItem(storageKey);
+            if(localData) stats = JSON.parse(localData);
+
             try {
                 const response = await vkBridge.send('VKWebAppStorageGet', { keys: [storageKey] });
                 if (response.keys[0]?.value) {
                     stats = JSON.parse(response.keys[0].value);
                     return;
                 }
-            } catch (error) { /* continue to localStorage */ }
-            const localData = localStorage.getItem(storageKey);
-            if (localData) { stats = JSON.parse(localData); }
+            } catch (error) { console.warn("VK Load failed, using local.", error); }
         }
 
         function playSound(sound) { if (soundEnabled) { sound.currentTime = 0; sound.play().catch(e => {}); } }
@@ -478,7 +482,7 @@
             
             const modeTitles = { classic: 'Классика', hard: 'Хард-режим', clearTheTop: 'Очистка' };
             gameTitleDisplay.textContent = modeTitles[mode];
-            document.getElementById('shots-left-display').style.visibility = (mode !== 'clearTheTop') ? 'visible' : 'hidden';
+            document.getElementById('shots-left-display').style.visibility = (mode === 'clearTheTop') ? 'hidden' : 'visible';
 
             for (let r = 0; r < START_ROWS; r++) {
                 for (let c = 0; c < COLS; c++) {
@@ -492,9 +496,22 @@
             
             updateUI();
             requestAnimationFrame(gameLoop);
+            vkBridge.send('VKWebAppShowBannerAd', { banner_location: 'bottom' }).catch(e => console.error(e));
         }
         
-        function setCanvasSize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+        function setCanvasSize() {
+            const container = document.getElementById('game-container');
+            const aspectRatio = COLS / 14; // Approximate ratio for a mostly visible grid
+            let w = container.clientWidth;
+            let h = container.clientHeight;
+            if (w / h > aspectRatio) {
+                w = h * aspectRatio;
+            } else {
+                h = w / aspectRatio;
+            }
+            canvas.width = w;
+            canvas.height = h;
+        }
         
         function updateUI() {
             scoreDisplay.textContent = score;
@@ -703,11 +720,8 @@
             gamesPlayedSinceAd++;
             if (gamesPlayedSinceAd >= 2) {
                 try {
-                    const adData = await vkBridge.send('VKWebAppCheckNativeAds', { ad_format: 'interstitial' });
-                    if (adData.result) {
-                        await vkBridge.send('VKWebAppShowNativeAds', { ad_format: 'interstitial' });
-                        gamesPlayedSinceAd = 0;
-                    }
+                    await vkBridge.send('VKWebAppShowInterstitialAd', {});
+                    gamesPlayedSinceAd = 0;
                 } catch (e) { console.error("Interstitial ad error:", e); }
             }
         }
@@ -818,47 +832,44 @@
         function drawAimingLine(startX, startY) {
             if (!aimAngle) return;
             let x = startX, y = startY, angle = aimAngle;
-            ctx.beginPath();
-            ctx.setLineDash([4, 8]);
-            ctx.moveTo(x, y);
+            
+            const grad = ctx.createLinearGradient(startX, startY, x + Math.cos(angle) * 150, y + Math.sin(angle) * 150);
+            grad.addColorStop(0, "white");
+            grad.addColorStop(1, "rgba(255,255,255,0)");
+
+            ctx.strokeStyle = grad;
+            ctx.lineWidth = 4;
+            ctx.setLineDash([]);
+            
             const maxReflections = (currentMode === 'hard') ? 0 : 2;
             for (let i = 0; i <= maxReflections; i++) {
-                const { newX, newY, newAngle, hitWall } = getReflectionPoint(x, y, angle);
-                ctx.lineTo(newX, newY);
-                if (!hitWall) break;
-                x = newX; y = newY; angle = newAngle;
+                const endPos = getReflectionPoint(x, y, angle);
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(endPos.x, endPos.y);
+                ctx.stroke();
+                if (!endPos.bounced) break;
+                x = endPos.x; y = endPos.y; angle = endPos.newAngle;
             }
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
-            ctx.lineWidth = 3;
-            ctx.stroke();
-            ctx.setLineDash([]);
         }
 
         function getReflectionPoint(x, y, angle) {
-            const cos = Math.cos(angle);
-            const sin = Math.sin(angle);
-            let t = Infinity;
-            let hitWall = false;
-            let newAngle = angle;
+            let t = Infinity, bounced = false, newAngle = angle;
             
-            if (cos > 0) { t = Math.min(t, (canvas.width - bubbleRadius - x) / cos); } 
-            else if (cos < 0) { t = Math.min(t, (bubbleRadius - x) / cos); }
-            if (sin < 0) { t = Math.min(t, (bubbleRadius - y) / sin); }
+            const tX = (Math.cos(angle) > 0) ? (canvas.width - bubbleRadius - x) / Math.cos(angle) : (bubbleRadius - x) / Math.cos(angle);
+            const tY = (Math.sin(angle) < 0) ? (bubbleRadius - y) / Math.sin(angle) : Infinity;
 
-            const endX = x + t * cos;
-            const endY = y + t * sin;
+            if (tX > 0 && tX < t) t = tX;
+            if (tY > 0 && tY < t) t = tY;
 
-            if (Math.abs(endX - bubbleRadius) < 0.01 || Math.abs(endX - (canvas.width - bubbleRadius)) < 0.01) {
-                newAngle = Math.PI - angle;
-                hitWall = true;
-            } else if (Math.abs(endY - bubbleRadius) < 0.01) {
-                newAngle = -angle;
-                hitWall = true;
-            }
-            return { newX: endX, newY: endY, newAngle, hitWall };
+            const endX = x + t * Math.cos(angle);
+            const endY = y + t * Math.sin(angle);
+
+            if (t === tX) { newAngle = Math.PI - angle; bounced = true; }
+            
+            return { x: endX, y: endY, newAngle, bounced };
         }
 
-        let aimAngle = null;
         function handlePointerDown(e) {
             if (isGameOver || isPaused) return;
             isAiming = true;
@@ -871,7 +882,7 @@
             isAiming = false;
             playSound(sounds.shoot);
             isShooting = true;
-            const speed = 15;
+            const speed = canvas.height / 50; // Speed relative to canvas height
             projectile = { x: canvas.width / 2, y: canvas.height - bubbleRadius * 1.5, vx: Math.cos(aimAngle) * speed, vy: Math.sin(aimAngle) * speed, color: currentBubble.color };
             aimAngle = null;
         }
@@ -931,6 +942,17 @@
                 initGame(currentMode);
             }
         }, 250));
+        
+        function loadTheme() {
+            const isDark = localStorage.getItem('bubbleShooterTheme') === 'dark';
+            document.body.dataset.theme = isDark ? 'dark' : 'light';
+        }
+
+        function toggleTheme() {
+            const newTheme = document.body.dataset.theme === 'light' ? 'dark' : 'light';
+            document.body.dataset.theme = newTheme;
+            localStorage.setItem('bubbleShooterTheme', newTheme);
+        }
 
         init();
     });
