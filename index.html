@@ -12,7 +12,6 @@
             --text-color: #ffffff;
             --header-bg: #313b57;
             --shadow-color: rgba(0, 0, 0, 0.25);
-            /* Системный шрифт для лучшего отображения на всех устройствах, включая iPhone */
             --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             --primary-button-bg: linear-gradient(180deg, #ffd700 0%, #ffb300 100%);
             --primary-button-shadow: #c78800;
@@ -44,7 +43,6 @@
             -webkit-user-select: none;
         }
 
-        /* Контейнер для поддержания соотношения сторон */
         #app-container {
             width: 100%;
             height: 100%;
@@ -56,7 +54,6 @@
         #app {
             width: 100%;
             height: 100%;
-            /* Фиксируем соотношение сторон, например 9:18 */
             aspect-ratio: 9 / 18;
             max-width: 450px;
             max-height: 95vh;
@@ -92,6 +89,7 @@
             color: var(--text-color);
             text-shadow: 5px 5px 0px rgba(0,0,0,0.2);
             margin-bottom: 20px;
+            text-align: center;
         }
         .menu-buttons {
             display: flex;
@@ -139,7 +137,6 @@
             z-index: 10;
         }
 
-        .header-buttons { display: flex; gap: 10px; }
         .icon-button {
             width: 44px;
             height: 44px;
@@ -199,7 +196,6 @@
             cursor: pointer;
         }
 
-        /* Нижняя панель UI */
         #ui-overlay {
             position: absolute;
             bottom: 0px;
@@ -222,7 +218,7 @@
             transform: translateX(-50%);
             width: 80px;
             height: 50px;
-            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA4MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgc3R5bGU9ImZpbHRlcjp1cmwoI2ZpbHRlcjBfZF8xXzIpIj4KPHBhdGggZD0iTTQwIDQwQzIwIDQwIDAgMjAgMCAyMEg4MEM4MCAyMCA2MCA0MCA0MCA0MFoiIGZpbGw9IiMzMTNCNTciLz4KPC9nPgo8ZGVmcz4KPGZpbHRlciBpZD0iZmlsdGVyMF9kXzFfMiIgeD0iLTMiIHk9Ii0yIiB3aWR0aD0iODYiIGhlaWdodD0iNTIiIGZpbHRlckF0dHJpYnV0ZXM9Im1hcmdpbjoiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iNCIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0bPSJvdXQiLz4KPGZlQ29sb3JNYXRyaXggdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAuMjUgMCIvPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIGluMj0iQmFja2dyb3VuZEltYWdlRml4IiByZXN1bHQ9ImVmZmVjdDFfZHJvcFNoYWRvdyJfPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9ImVmZmVjdDFfZHJvcFNoYWRvdyJfMSByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8L2RlZnM+Cjwvc3ZnPgo=');
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA4MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgc3R5bGU9ImZpbHRlcjp1cmwoI2ZpbHRlcjBfZF8xXzIpIj4KPHBhdGggZD0iTTQwIDQwQzIwIDQwIDAgMjAgMCAyMEg4MEM4MCAyMCA2MCA0MCA0MCA0MFoiIGZpbGw9IiMzMTNCNTciLz4KPC9nPgo8ZGVmcz4KPGZpbHRlciBpZD0iZmlsdGVyMF9kXzFfMiIgeD0iLTMiIHk9Ii0yIiB3aWR0aD0iODYiIGhlaWdodD0iNTIiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iNCIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0bPSJvdXQiLz4KPGZlQ29sb3JNYXRyaXggdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAuMjUgMCIvPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIGluMj0iQmFja2dyb3VuZEltYWdlRml4IiByZXN1bHQ9ImVmZmVjdDFfZHJvcFNoYWRvdyJfPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9ImVmZmVjdDFfZHJvcFNoYWRvdyJfMSByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8L2RlZnM+Cjwvc3ZnPgo=');
             background-size: contain;
             background-repeat: no-repeat;
             z-index: 2;
@@ -294,13 +290,13 @@
             transform: scale(0.8) translateY(20px);
             transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
             width: 90%;
-            max-width: 350px;
+            max-width: 380px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
         .modal-overlay.visible .modal-content { transform: scale(1) translateY(0); }
-        .modal-content h2 { font-size: 2.5rem; font-weight: 800; margin-bottom: 10px; }
-        .modal-content p { font-size: 1.2rem; margin-bottom: 25px; }
+        .modal-content h2 { font-size: 2.2rem; font-weight: 800; margin-bottom: 10px; }
+        .modal-content p { font-size: 1.1rem; margin-bottom: 20px; line-height: 1.5; }
         
         .modal-button {
             background: var(--secondary-button-bg);
@@ -323,22 +319,17 @@
             border-bottom-color: var(--primary-button-shadow);
         }
         .modal-buttons { display: flex; flex-direction: column; gap: 15px; }
-        .stats-table { width: 100%; margin-top: 20px; background: rgba(0,0,0,0.15); border-radius: 10px; padding: 15px; font-size: 1.1rem; }
-        .stats-table td { padding: 8px; }
+        .stats-table, .rules-table { width: 100%; margin-top: 20px; background: rgba(0,0,0,0.15); border-radius: 10px; padding: 15px; font-size: 1rem; }
+        .stats-table td, .rules-table td { padding: 8px; vertical-align: top; }
         .stats-table td:first-child { text-align: left; font-weight: 500; }
         .stats-table td:last-child { text-align: right; font-weight: 700; }
+        .rules-table h3 { font-size: 1.2rem; margin-bottom: 5px; color: var(--primary-button-bg); text-shadow: none; }
+        .rules-table p { font-size: 0.95rem; text-align: left; margin-bottom: 10px; }
 
-        /* Полоса прокрутки для лучшего вида */
+
         #game-screen {
             background: var(--game-area-bg);
             position: relative;
-        }
-        #game-scroller {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
         }
     </style>
 </head>
@@ -350,36 +341,34 @@
                 <h1>Bubble<br>Shooter</h1>
                 <div class="menu-buttons">
                     <button class="menu-button" data-mode="classic">Классика</button>
-                    <button class="menu-button" data-mode="clearTheTop">Очистка</button>
                     <button class="menu-button" data-mode="hard">Хард-режим</button>
+                    <button id="rules-btn" class="menu-button secondary">Правила</button>
                     <button id="stats-btn" class="menu-button secondary">Статистика</button>
                 </div>
             </div>
 
             <div id="game-screen" class="screen hidden">
-                <div id="game-scroller">
-                    <header>
-                        <button class="icon-button" id="pause-btn">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="4" x2="6" y2="20"></line><line x1="18" y1="4" x2="18" y2="20"></line></svg>
-                        </button>
-                        <div id="game-title"></div>
-                        <button class="icon-button" id="sound-btn">
-                            <svg id="sound-on-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-                            <svg id="sound-off-icon" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
-                        </button>
-                    </header>
-                    <div id="score-display">0</div>
-                    <div id="game-container">
-                        <canvas id="game-canvas"></canvas>
-                        <div id="launcher-base"></div>
+                <header>
+                    <button class="icon-button" id="pause-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="4" x2="6" y2="20"></line><line x1="18" y1="4" x2="18" y2="20"></line></svg>
+                    </button>
+                    <div id="game-title"></div>
+                    <button class="icon-button" id="sound-btn">
+                        <svg id="sound-on-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                        <svg id="sound-off-icon" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+                    </button>
+                </header>
+                <div id="score-display">0</div>
+                <div id="game-container">
+                    <canvas id="game-canvas"></canvas>
+                    <div id="launcher-base"></div>
+                </div>
+                <div id="ui-overlay">
+                     <div id="shots-left-display">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path></svg>
+                        <span id="shots-left-value">5</span>
                     </div>
-                    <div id="ui-overlay">
-                         <div id="shots-left-display">
-                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path></svg>
-                            <span id="shots-left-value">5</span>
-                        </div>
-                        <div id="next-bubble-display"></div>
-                    </div>
+                    <div id="next-bubble-display"></div>
                 </div>
             </div>
             
@@ -413,12 +402,32 @@
                     <table class="stats-table">
                         <tbody>
                             <tr> <td>Классика:</td> <td id="stats-classic">0</td> </tr>
-                            <tr> <td>Очистка:</td> <td id="stats-clearTheTop">0</td> </tr>
                             <tr> <td>Хард-режим:</td> <td id="stats-hard">0</td> </tr>
                         </tbody>
                     </table>
                     <div class="modal-buttons" style="margin-top: 20px;">
                          <button id="close-stats-btn" class="modal-button">Закрыть</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="rules-modal" class="modal-overlay">
+                <div class="modal-content">
+                    <h2>Правила Игры</h2>
+                    <div class="rules-table">
+                        <h3>Классика</h3>
+                        <p>
+                            - Длинный прицел с отскоком от стен.<br>
+                            - Новая линия шаров появляется после <strong>5 промахов подряд</strong>.
+                        </p>
+                        <h3>Хард-режим</h3>
+                        <p>
+                            - Короткий прицел без отскока.<br>
+                            - Новая линия шаров появляется после <strong>каждых 5 промахов</strong> (счетчик не сбрасывается).
+                        </p>
+                    </div>
+                    <div class="modal-buttons" style="margin-top: 20px;">
+                         <button id="close-rules-btn" class="modal-button">Понятно</button>
                     </div>
                 </div>
             </div>
@@ -429,14 +438,6 @@
     document.addEventListener('DOMContentLoaded', () => {
         // --- VK Bridge ---
         vkBridge.send('VKWebAppInit');
-        vkBridge.subscribe(e => {
-            if (e.detail.type === 'VKWebAppUpdateConfig') {
-                const safeArea = e.detail.data.insets;
-                if (safeArea) {
-                    document.getElementById('app').style.paddingBottom = `${safeArea.bottom}px`;
-                }
-            }
-        });
 
         // --- DOM Elements ---
         const app = document.getElementById('app');
@@ -453,6 +454,7 @@
         const soundOffIcon = document.getElementById('sound-off-icon');
         const pauseBtn = document.getElementById('pause-btn');
         const statsBtn = document.getElementById('stats-btn');
+        const rulesBtn = document.getElementById('rules-btn');
         const pauseModal = document.getElementById('pause-modal');
         const resumeBtn = document.getElementById('resume-btn');
         const restartPauseBtn = document.getElementById('restart-pause-btn');
@@ -465,17 +467,17 @@
         const mainMenuEndBtn = document.getElementById('main-menu-end-btn');
         const statsModal = document.getElementById('stats-modal');
         const closeStatsBtn = document.getElementById('close-stats-btn');
+        const rulesModal = document.getElementById('rules-modal');
+        const closeRulesBtn = document.getElementById('close-rules-btn');
         const uiOverlay = document.getElementById('ui-overlay');
         const gameContainer = document.getElementById('game-container');
 
-
         // --- Game Constants ---
         const BUBBLE_COLORS = ['#ff6347', '#ffc0cb', '#4169e1', '#32cd32', '#ffa500', '#9370db', '#00ffff'];
-        const COLS = 9;
-        const START_ROWS = 5;
-        const SHOTS_UNTIL_DROP_CLASSIC = 5;
-        const SHOTS_UNTIL_DROP_HARD = 4;
-        const PROJECTILE_SPEED = 18;
+        const COLS = 11; // ИЗМЕНЕНО: 9 -> 11
+        const START_ROWS = 6;
+        const SHOTS_UNTIL_DROP = 5;
+        const PROJECTILE_SPEED = 20;
 
         // --- Game State ---
         let bubbleRadius;
@@ -483,27 +485,28 @@
         let currentBubble, nextBubble;
         let projectile = null;
         let score = 0;
-        let shotsSinceDrop = 0;
+        let consecutiveMisses = 0; // Для классики
+        let totalMisses = 0; // Для хард-режима
         let isAiming = false;
         let isGameOver = false;
         let isPaused = false;
-        let isShooting = false; // <<< ИСПРАВЛЕНО: Добавлена переменная
+        let isShooting = false;
         let soundEnabled = true;
         let currentMode = 'classic';
         let floatingTexts = [];
         let particles = [];
-        let stats = { classic: 0, clearTheTop: 0, hard: 0 };
+        let stats = { classic: 0, hard: 0 };
         let aimAngle = null;
         let lastTime = 0;
         let vkUserId = null;
         let animationFrameId;
 
-        // --- Sound Effects ---
+        // --- Sound Effects (same as before) ---
         const sounds = {
             shoot: new Audio("data:audio/wav;base64,UklGRlgBAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQBAAD//wH//gD//f8B/f4A/f4A/v4A/v4A/v4A/v4A/P0A/P0A/P0A+v0A+f0A9/0A9/0A9v0A9f0A8/0A8v0A8P0A7v0A7f0A7P0A6/0A6v0A6P0A5/0A5v0A5P0A4/0A4v0A4P0A3/0A3f0A2/0A2v0A2P0A1/0A1f0A1P0A0/0A0f0A0P0Az/0AzP0Ay/0Ayv0AyP0Ax/0AxP0Aw/0Awv0AwP0Av/0AvP0Auv0Auv0AuP0At/0AtP0As/0Asv0AsP0Ar/0ArP0Aq/0Aqv0AqP0Ap/0ApP0Ao/0Aov0AoP0An/0AnP0Am/0Amv0AmP0Al/0AlP0Ak/0Akv0AkP0Aj/0AjP0Ai/0Aiv0AiP0Ah/0AhP0Ag/0Agv0AgP0Af/0AfP0Aev0Aev0AeP0Adv0AdP0Ac/0Acv0AcP0Ab/0AbP0Aav0Aav0AaP0A"),
             pop: new Audio("data:audio/wav;base64,UklGRlIAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YUwAAAAA9/D58vLz8fH07u/07e/v7e/28fL09ff7/v8A/v8A//8A//8A//8A//8AAP8A/wAA/wD/AP8BAP8C/wP/A/8E/wP/BP8E/wP/A/8E/wP/A/8C/wL/Av8A/wD/AP8A/wD+/vr6+Pj3+Pf3+Pj4+fj4+fj49/f39/f39vX29fX19fX29vb29/f4+Pj49/f39/f39/f3+Pj4+fj5+fn6+fr6+/v7+/v7+/v7+/v8/Pz8/Pz9/f39/f39/f7+/v7+/////wAA//8A//8A//8A//8A//8A//8A//8A//8A//8A//8A//8A//8A//8A/wD/AAAA//8A//8A//8A//8A/wAA/wD/AP8A/wD/AP8A/wD/AAAA/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AAAAAP8A/wD/AAAAAP///w=="),
             drop: new Audio("data:audio/wav;base64,UklGRkgCAABXQVZFZm10IBAAAAABAAIARKwAAIhYAQAEABAAZGF0YQgCAAB9mZ+RjoyEgnp5eXRvbm5rbIiJiIeFgX59eXZzbnBramdpaGhpa2xra21ubm9wcHFyc3V2d3h5e3x9fn+AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeYmZqbnJ2en6ChoqOkpaanqKmqq6ytrq+wsbKztLW2t7i5uru8vb6/wMHCw8TFxsfIycrLzM3Oz9DR0tPU1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v8PHy8/T19vf4+fr7/P3+/w=="),
-            combo: new Audio("data:audio/wav;base64,UklGRlQDAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQwDAACAgIaGh4iIiYmKioqKiYiIiIaGhoWFhYWExMTEysrKzMzMzc3Nzs7Ozs3NzMzMysrKxMTExMTEysrKzMzMzc3Nzs7Ozs3NzMzMysrKxMTExMTEysrKzMzMzc3Nzs7Ozs3NzMzMysrKxMTE")
+            combo: new Audio("data:audio/wav;base64,UklGRlQDAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQwDAACAgIaGh4iIiYmKioqKiYiIiIaGhoWFhYWExMTEysrKzMzMzc3Nzs7Ozs3NzMzMysrKxMTExMTEysrKzMzMzc3Nzs7Ozs3NzMzMysrKxMTExMTEysrKzMzMzc3Nzs7Ozs3NzMzMysrKxMTExMTE")
         };
         
         // --- Utility Functions ---
@@ -527,11 +530,10 @@
             document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
             const screen = document.getElementById(screenId);
             screen.classList.remove('hidden');
-            // <<< ИСПРАВЛЕНО: Баннер показывается всегда
             if(screenId === 'main-menu-screen' || screenId === 'game-screen') {
-                vkBridge.send('VKWebAppShowBannerAd', { banner_location: 'bottom' }).catch(e => console.error("Banner Ad Error:", e));
+                vkBridge.send('VKWebAppShowBannerAd', { banner_location: 'bottom' }).catch(e => {});
             } else {
-                 vkBridge.send('VKWebAppHideBannerAd').catch(e => console.error("Banner Ad Error:", e));
+                 vkBridge.send('VKWebAppHideBannerAd').catch(e => {});
             }
         }
         
@@ -541,7 +543,6 @@
                 const user = await vkBridge.send('VKWebAppGetUserInfo');
                 vkUserId = user.id;
             } catch (error) {
-                console.warn("VK UserInfo failed, using localStorage.");
                 vkUserId = localStorage.getItem('guestUserId') || `guest_${Date.now()}`;
                 localStorage.setItem('guestUserId', vkUserId);
             }
@@ -575,38 +576,44 @@
 
         // --- Game Setup ---
         function setGameSize() {
-            // Рассчитываем высоту gameContainer с учетом футера (uiOverlay)
             const availableHeight = app.clientHeight - uiOverlay.offsetHeight;
             gameContainer.style.height = `${availableHeight}px`;
 
             canvas.width = gameContainer.clientWidth;
             canvas.height = gameContainer.clientHeight;
             
-            // Радиус шара зависит только от ширины
             bubbleRadius = canvas.width / (COLS * 2);
 
-            // Перерисовываем игру, но не перезапускаем
-            if (!isGameOver && !isPaused) {
+            if (!isGameOver && !isPaused && grid.length > 0) {
                 draw();
             }
         }
 
         function initGame(mode) {
             if(animationFrameId) cancelAnimationFrame(animationFrameId);
-            showScreen('game-screen');
+            
             currentMode = mode;
+            showScreen('game-screen');
+            // ИСПРАВЛЕНИЕ БАГА: Устанавливаем размеры сразу после показа экрана
             setGameSize();
             
+            // Проверка на случай, если canvas еще не имеет размеров
+            if (canvas.width === 0 || canvas.height === 0) {
+                setTimeout(() => initGame(mode), 50); // Попробовать еще раз через 50мс
+                return;
+            }
+
             const maxRows = Math.floor(canvas.height / (bubbleRadius * Math.sqrt(3) * 0.9));
             grid = new Array(maxRows).fill(null).map(() => new Array(COLS).fill(null));
             projectile = null;
             score = 0;
-            shotsSinceDrop = 0;
+            consecutiveMisses = 0;
+            totalMisses = 0;
             isGameOver = false;
             isPaused = false;
             isShooting = false;
             
-            const modeTitles = { classic: 'Классика', hard: 'Хард-режим', clearTheTop: 'Очистка' };
+            const modeTitles = { classic: 'Классика', hard: 'Хард-режим' };
             gameTitleDisplay.textContent = modeTitles[mode];
 
             for (let r = 0; r < START_ROWS; r++) {
@@ -626,8 +633,8 @@
         
         function updateUI() {
             scoreDisplay.textContent = score;
-            const shotsUntilDrop = (currentMode === 'hard') ? SHOTS_UNTIL_DROP_HARD : SHOTS_UNTIL_DROP_CLASSIC;
-            shotsLeftDisplay.textContent = shotsUntilDrop - shotsSinceDrop;
+            const misses = (currentMode === 'hard') ? totalMisses : consecutiveMisses;
+            shotsLeftDisplay.textContent = SHOTS_UNTIL_DROP - misses;
 
             nextBubbleDisplay.innerHTML = '';
             const nextBubbleEl = document.createElement('div');
@@ -684,7 +691,7 @@
             particles.forEach((p, index) => {
                 p.x += p.vx;
                 p.y += p.vy;
-                p.vy += 0.1; // gravity
+                p.vy += 0.1;
                 p.alpha -= 0.02;
                 if(p.alpha <= 0) particles.splice(index, 1);
             });
@@ -701,7 +708,6 @@
             const launcherX = canvas.width / 2;
             const launcherY = canvas.height - bubbleRadius;
             
-            // Draw bubbles in grid
             for (let r = 0; r < grid.length; r++) {
                 for (let c = 0; c < COLS; c++) {
                     if (grid[r][c]) {
@@ -711,16 +717,13 @@
                 }
             }
 
-            // Draw current bubble and aiming line
             if(!isShooting && !isGameOver) {
                  drawBubble(launcherX, launcherY, bubbleRadius, currentBubble.color);
                  if(isAiming) drawAimingLine(launcherX, launcherY);
             }
             
-            // Draw projectile
             if (projectile) drawBubble(projectile.x, projectile.y, bubbleRadius, projectile.color);
 
-            // Draw particles and texts
             particles.forEach(p => {
                 ctx.fillStyle = `rgba(${p.r}, ${p.g}, ${p.b}, ${p.alpha})`;
                 ctx.beginPath();
@@ -748,13 +751,18 @@
                 grid[snapPos.r][snapPos.c] = { color: p.color };
                 await handleMatches(snapPos.r, snapPos.c);
             } else {
-                 shotsSinceDrop++;
-                 checkDrop();
+                 handleMiss();
                  swapToNextBubble();
             }
-            isShooting = false; // <<< ИСПРАВЛЕНО: Разрешить следующий выстрел
+            isShooting = false;
         }
         
+        function handleMiss() {
+            consecutiveMisses++;
+            totalMisses++;
+            checkDrop();
+        }
+
         async function handleMatches(r, c) {
             const matches = findMatches(r, c);
             if (matches.length >= 3) {
@@ -771,33 +779,33 @@
                 score += matches.length * 10;
                 if (matches.length >= 4) {
                     playSound(sounds.combo);
-                    floatingTexts.push({ text: `Combo x${matches.length}!`, x: sumX / matches.length, y: sumY / matches.length, opacity: 1});
-                    score += (matches.length - 3) * 20; // Bonus for combo
+                    floatingTexts.push({ text: `Комбо x${matches.length}!`, x: sumX / matches.length, y: sumY / matches.length, opacity: 1});
+                    score += (matches.length - 3) * 20;
                 }
 
-                await new Promise(resolve => setTimeout(resolve, 50)); // small delay
+                await new Promise(resolve => setTimeout(resolve, 50));
 
                 const dropped = await findFloatingBubbles();
                 if (dropped.length > 0) {
                     playSound(sounds.drop);
                     score += Math.pow(2, dropped.length) * 10;
-                     floatingTexts.push({ text: `Drop +${dropped.length}!`, x: canvas.width/2, y: canvas.height/2, opacity: 1});
+                     floatingTexts.push({ text: `Падение +${dropped.length}!`, x: canvas.width/2, y: canvas.height/2, opacity: 1});
                 }
-                shotsSinceDrop = 0;
+                consecutiveMisses = 0; // Сбрасываем только для классики
             } else {
-                shotsSinceDrop++;
+                handleMiss();
             }
-            checkDrop();
             swapToNextBubble();
             checkWinLose();
         }
         
         function checkDrop() {
-            if (currentMode === 'clearTheTop') return; // No dropping in this mode
-            const shotsUntilDrop = (currentMode === 'hard') ? SHOTS_UNTIL_DROP_HARD : SHOTS_UNTIL_DROP_CLASSIC;
-            if(shotsSinceDrop >= shotsUntilDrop) {
+            if (currentMode === 'classic' && consecutiveMisses >= SHOTS_UNTIL_DROP) {
                 addNewRow();
-                shotsSinceDrop = 0;
+                consecutiveMisses = 0;
+            } else if (currentMode === 'hard' && totalMisses >= SHOTS_UNTIL_DROP) {
+                addNewRow();
+                totalMisses = 0;
             }
         }
         
@@ -820,20 +828,12 @@
         }
         
         function checkWinLose() {
-            // Lose condition
             const lastRowIdx = grid.length - 1;
             for (let c = 0; c < COLS; c++) { if (grid[lastRowIdx][c]) { endGame(false); return; } }
             
-            // Win condition
             let bubblesLeft = false;
             grid.forEach(row => row.forEach(bubble => { if (bubble) bubblesLeft = true; }));
             if (!bubblesLeft) { endGame(true); return; }
-
-            if(currentMode === 'clearTheTop') {
-                let topRowEmpty = true;
-                for (let c = 0; c < COLS; c++) { if (grid[0][c]) { topRowEmpty = false; break; } }
-                if(topRowEmpty) endGame(true);
-            }
         }
         
         function endGame(isWin) {
@@ -841,11 +841,7 @@
             isGameOver = true;
             cancelAnimationFrame(animationFrameId);
             
-            if (isWin) {
-                endGameTitle.textContent = "Победа!";
-            } else {
-                endGameTitle.textContent = "Проигрыш";
-            }
+            endGameTitle.textContent = isWin ? "Победа!" : "Проигрыш";
             
             if (score > (stats[currentMode] || 0)) {
                 stats[currentMode] = score;
@@ -856,7 +852,7 @@
             setTimeout(() => endGameModal.classList.add('visible'), 500);
         }
 
-        // --- Bubble Logic ---
+        // --- Bubble Logic (same as before) ---
         function findMatches(startR, startC) {
             const startBubble = grid[startR]?.[startC];
             if (!startBubble) return [];
@@ -963,72 +959,67 @@
             ctx.shadowBlur = 5;
             ctx.shadowOffsetY = 2;
             ctx.fill();
-            ctx.shadowColor = 'transparent'; // Reset shadow
+            ctx.shadowColor = 'transparent';
             ctx.closePath();
         }
         
         function drawAimingLine(startX, startY) {
             if (aimAngle === null) return;
-            let x = startX, y = startY;
-            let angle = aimAngle;
             
             ctx.save();
-            ctx.setLineDash([2, 10]);
+            ctx.setLineDash([2, 5]); // ИЗМЕНЕНО: Сплошной пунктир
             ctx.lineCap = 'round';
-            
-            const grad = ctx.createLinearGradient(x, y, x + Math.cos(angle) * 150, y + Math.sin(angle) * 150);
-            grad.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
-            grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-
-            ctx.strokeStyle = grad;
             ctx.lineWidth = 4;
             
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-
-            const { x: endX, y: endY, bounceType } = getTrajectoryEnd(x, y, angle);
-            ctx.lineTo(endX, endY);
+            const grad = ctx.createLinearGradient(startX, startY, startX + Math.cos(aimAngle) * 150, startY + Math.sin(aimAngle) * 150);
+            grad.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+            grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            ctx.strokeStyle = grad;
             
-            // Second segment after bounce
-            if (bounceType === 'vertical') {
-                const newAngle = Math.PI - angle;
-                const { x: finalX, y: finalY } = getTrajectoryEnd(endX, endY, newAngle);
-                ctx.lineTo(finalX, finalY);
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+
+            // Логика траектории
+            let currentX = startX;
+            let currentY = startY;
+            let currentAngle = aimAngle;
+            const maxBounces = (currentMode === 'classic') ? 1 : 0; // 1 отскок для классики, 0 для харда
+            const maxLength = (currentMode === 'classic') ? canvas.height * 2 : canvas.height * 0.3; // Длина линии
+            let remainingLength = maxLength;
+
+            for (let i = 0; i <= maxBounces; i++) {
+                const cosA = Math.cos(currentAngle);
+                const sinA = Math.sin(currentAngle);
+                
+                let t = remainingLength;
+                
+                // Столкновение со стенами
+                if (cosA > 0) t = Math.min(t, (canvas.width - bubbleRadius - currentX) / cosA);
+                else if (cosA < 0) t = Math.min(t, (bubbleRadius - currentX) / cosA);
+                
+                // Столкновение с потолком
+                if (sinA < 0) t = Math.min(t, (bubbleRadius - currentY) / sinA);
+
+                const endX = currentX + t * cosA;
+                const endY = currentY + t * sinA;
+                
+                ctx.lineTo(endX, endY);
+                
+                remainingLength -= t;
+                if (remainingLength <= 0) break;
+                
+                // Логика отскока
+                if (Math.abs(endX - bubbleRadius) < 1 || Math.abs(endX - (canvas.width - bubbleRadius)) < 1) {
+                    currentAngle = Math.PI - currentAngle; // Отскок от вертикальной стены
+                } else {
+                    break; // Прекращаем, если отскок не от боковой стены
+                }
+                currentX = endX;
+                currentY = endY;
             }
             
             ctx.stroke();
             ctx.restore();
-        }
-
-        function getTrajectoryEnd(startX, startY, angle) {
-            const cosA = Math.cos(angle);
-            const sinA = Math.sin(angle);
-            let t = Infinity;
-            let bounceType = 'none';
-
-            // Side walls
-            if (cosA > 0) t = Math.min(t, (canvas.width - bubbleRadius - startX) / cosA);
-            else if (cosA < 0) t = Math.min(t, (bubbleRadius - startX) / cosA);
-            
-            // Top wall (only for hard mode)
-            if (currentMode === 'hard' && sinA < 0) {
-                 const tY = (bubbleRadius - startY) / sinA;
-                 if (tY < t) {
-                    t = tY;
-                    bounceType = 'horizontal';
-                 } else {
-                    bounceType = 'vertical';
-                 }
-            } else {
-                bounceType = (t !== Infinity) ? 'vertical' : 'none';
-            }
-
-            // Fallback for straight up shots in non-hard modes
-            if (sinA < 0 && bounceType === 'none') {
-                t = (bubbleRadius - startY) / sinA;
-            }
-
-            return { x: startX + t * cosA, y: startY + t * sinA, bounceType };
         }
 
         function createParticles(x, y, color) {
@@ -1054,7 +1045,6 @@
             if (isGameOver || isPaused || isShooting) return;
             const rect = canvas.getBoundingClientRect();
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            // Only start aiming if touch is above the UI overlay
             if (clientY - rect.top < uiOverlay.offsetTop) {
                  isAiming = true;
                  updateAim(e);
@@ -1084,7 +1074,6 @@
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             
-            // Adjust coordinates based on canvas aspect ratio
             const scaleX = canvas.width / rect.width;
             const scaleY = canvas.height / rect.height;
             const touchX = (clientX - rect.left) * scaleX;
@@ -1109,20 +1098,22 @@
             app.addEventListener('contextmenu', e => e.preventDefault());
 
             document.querySelectorAll('.menu-button[data-mode]').forEach(btn => btn.addEventListener('click', () => initGame(btn.dataset.mode)));
+            
             statsBtn.addEventListener('click', () => {
                 document.getElementById('stats-classic').textContent = stats.classic || 0;
-                document.getElementById('stats-clearTheTop').textContent = stats.clearTheTop || 0;
                 document.getElementById('stats-hard').textContent = stats.hard || 0;
                 statsModal.classList.add('visible');
             });
             closeStatsBtn.addEventListener('click', () => statsModal.classList.remove('visible'));
+
+            rulesBtn.addEventListener('click', () => rulesModal.classList.add('visible'));
+            closeRulesBtn.addEventListener('click', () => rulesModal.classList.remove('visible'));
             
             pauseBtn.addEventListener('click', () => { 
                 if(isGameOver) return;
                 isPaused = true;
                 pauseModal.classList.add('visible'); 
                 cancelAnimationFrame(animationFrameId);
-                // Баннер остается видимым
             });
 
             resumeBtn.addEventListener('click', () => { 
@@ -1130,7 +1121,6 @@
                 pauseModal.classList.remove('visible'); 
                 lastTime = performance.now();
                 gameLoop(lastTime);
-                // Баннер уже должен быть виден
             });
 
             const restart = () => {
@@ -1157,8 +1147,8 @@
                     if (adData.result) {
                         endGameModal.classList.remove('visible');
                         isGameOver = false;
-                        // Даем игроку 5 дополнительных ходов
-                        shotsSinceDrop = -5;
+                        consecutiveMisses = -5;
+                        totalMisses = -5;
                         updateUI();
                         lastTime = performance.now();
                         gameLoop(lastTime);
@@ -1186,4 +1176,3 @@
     </script>
 </body>
 </html>
-
