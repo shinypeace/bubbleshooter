@@ -196,12 +196,13 @@
             cursor: pointer;
         }
 
+        /* ИЗМЕНЕНО: высота панели */
         #ui-overlay {
             position: absolute;
             bottom: 0px;
             left: 0;
             width: 100%;
-            height: 120px;
+            height: 100px; 
             background: var(--header-bg);
             border-top: 4px solid #2a334a;
             display: flex;
@@ -209,11 +210,13 @@
             align-items: center;
             padding: 0 20px;
             pointer-events: none;
+            z-index: 20; /* ИЗМЕНЕНО: ставим поверх канваса */
         }
         
+        /* ИЗМЕНЕНО: позиция пушки */
         #launcher-base {
             position: absolute;
-            bottom: 90px;
+            bottom: 70px; 
             left: 50%;
             transform: translateX(-50%);
             width: 80px;
@@ -225,8 +228,8 @@
         }
 
         #shots-left-display {
-            width: 70px;
-            height: 70px;
+            width: 65px; /* ИЗМЕНЕНО */
+            height: 65px; /* ИЗМЕНЕНО */
             background: var(--bg-color);
             border-radius: 50%;
             border: 3px solid rgba(255,255,255,0.3);
@@ -235,21 +238,21 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            font-size: 1.8rem;
+            font-size: 1.6rem; /* ИЗМЕНЕНО */
             font-weight: 700;
             text-shadow: 1px 1px 2px var(--shadow-color);
             box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
         }
         #shots-left-display svg {
-            width: 28px;
-            height: 28px;
+            width: 24px; /* ИЗМЕНЕНО */
+            height: 24px; /* ИЗМЕНЕНО */
             margin-bottom: -5px;
             filter: drop-shadow(0 1px 1px rgba(0,0,0,0.4));
         }
 
         #next-bubble-display {
-            width: 60px;
-            height: 60px;
+            width: 55px; /* ИЗМЕНЕНО */
+            height: 55px; /* ИЗМЕНЕНО */
             background: rgba(0,0,0,0.2);
             border: 3px dashed rgba(255,255,255,0.3);
             border-radius: 50%;
@@ -473,8 +476,9 @@
         const gameContainer = document.getElementById('game-container');
 
         // --- Game Constants ---
-        const BUBBLE_COLORS = ['#ff6347', '#ffc0cb', '#4169e1', '#32cd32', '#ffa500', '#9370db', '#00ffff'];
-        const COLS = 11; // ИЗМЕНЕНО: 9 -> 11
+        // ИЗМЕНЕНО: Цвета шаров
+        const BUBBLE_COLORS = ['#ff6347', '#ffc0cb', '#1E90FF', '#32cd32', '#ffa500', '#8A2BE2', '#00ffff'];
+        const COLS = 11;
         const START_ROWS = 6;
         const SHOTS_UNTIL_DROP = 5;
         const PROJECTILE_SPEED = 20;
@@ -485,8 +489,8 @@
         let currentBubble, nextBubble;
         let projectile = null;
         let score = 0;
-        let consecutiveMisses = 0; // Для классики
-        let totalMisses = 0; // Для хард-режима
+        let consecutiveMisses = 0;
+        let totalMisses = 0;
         let isAiming = false;
         let isGameOver = false;
         let isPaused = false;
@@ -501,10 +505,10 @@
         let vkUserId = null;
         let animationFrameId;
 
-        // --- Sound Effects (same as before) ---
+        // --- Sound Effects ---
         const sounds = {
             shoot: new Audio("data:audio/wav;base64,UklGRlgBAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQBAAD//wH//gD//f8B/f4A/f4A/v4A/v4A/v4A/v4A/P0A/P0A/P0A+v0A+f0A9/0A9/0A9v0A9f0A8/0A8v0A8P0A7v0A7f0A7P0A6/0A6v0A6P0A5/0A5v0A5P0A4/0A4v0A4P0A3/0A3f0A2/0A2v0A2P0A1/0A1f0A1P0A0/0A0f0A0P0Az/0AzP0Ay/0Ayv0AyP0Ax/0AxP0Aw/0Awv0AwP0Av/0AvP0Auv0Auv0AuP0At/0AtP0As/0Asv0AsP0Ar/0ArP0Aq/0Aqv0AqP0Ap/0ApP0Ao/0Aov0AoP0An/0AnP0Am/0Amv0AmP0Al/0AlP0Ak/0Akv0AkP0Aj/0AjP0Ai/0Aiv0AiP0Ah/0AhP0Ag/0Agv0AgP0Af/0AfP0Aev0Aev0AeP0Adv0AdP0Ac/0Acv0AcP0Ab/0AbP0Aav0Aav0AaP0A"),
-            pop: new Audio("data:audio/wav;base64,UklGRlIAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YUwAAAAA9/D58vLz8fH07u/07e/v7e/28fL09ff7/v8A/v8A//8A//8A//8A//8AAP8A/wAA/wD/AP8BAP8C/wP/A/8E/wP/BP8E/wP/A/8E/wP/A/8C/wL/Av8A/wD/AP8A/wD+/vr6+Pj3+Pf3+Pj4+fj4+fj49/f39/f39vX29fX19fX29vb29/f4+Pj49/f39/f39/f3+Pj4+fj5+fn6+fr6+/v7+/v7+/v7+/v8/Pz8/Pz9/f39/f39/f7+/v7+/////wAA//8A//8A//8A//8A//8A//8A//8A//8A//8A//8A//8A//8A//8A/wD/AAAA//8A//8A//8A//8A/wAA/wD/AP8A/wD/AP8A/wD/AAAA/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AAAAAP8A/wD/AAAAAP///w=="),
+            pop: new Audio("data:audio/wav;base64,UklGRlIAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YUwAAAAA9/D58vLz8fH07u/07e/v7e/28fL09ff7/v8A/v8A//8A//8A//8A//8AAP8A/wAA/wD/AP8BAP8C/wP/A/8E/wP/BP8E/wP/A/8E/wP/A/8C/wL/Av8A/wD/AP8A/wD+/vr6+Pj3+Pf3+Pj4+fj4+fj49/f39/f39vX29fX1-fX29vb29/f4+Pj49/f39/f39/f3+Pj4+fj5+fn6+fr6+/v7+/v7+/v7+/v8/Pz8/Pz9/f39/f39/f7+/v7+/////wAA//8A//8A//8A//8A//8A//8A//8A//8A//8A//8A//8A//8A//8A/wD/AAAA//8A//8A//8A//8A/wAA/wD/AP8A/wD/AP8A/wD/AAAA/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AAAAAP8A/wD/AAAAAP///w=="),
             drop: new Audio("data:audio/wav;base64,UklGRkgCAABXQVZFZm10IBAAAAABAAIARKwAAIhYAQAEABAAZGF0YQgCAAB9mZ+RjoyEgnp5eXRvbm5rbIiJiIeFgX59eXZzbnBramdpaGhpa2xra21ubm9wcHFyc3V2d3h5e3x9fn+AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeYmZqbnJ2en6ChoqOkpaanqKmqq6ytrq+wsbKztLW2t7i5uru8vb6/wMHCw8TFxsfIycrLzM3Oz9DR0tPU1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v8PHy8/T19vf4+fr7/P3+/w=="),
             combo: new Audio("data:audio/wav;base64,UklGRlQDAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQwDAACAgIaGh4iIiYmKioqKiYiIiIaGhoWFhYWExMTEysrKzMzMzc3Nzs7Ozs3NzMzMysrKxMTExMTEysrKzMzMzc3Nzs7Ozs3NzMzMysrKxMTExMTEysrKzMzMzc3Nzs7Ozs3NzMzMysrKxMTExMTE")
         };
@@ -577,7 +581,7 @@
         // --- Game Setup ---
         function setGameSize() {
             const availableHeight = app.clientHeight - uiOverlay.offsetHeight;
-            gameContainer.style.height = `${availableHeight}px`;
+            gameContainer.style.height = `${app.clientHeight}px`; // Канвас занимает всю высоту
 
             canvas.width = gameContainer.clientWidth;
             canvas.height = gameContainer.clientHeight;
@@ -594,16 +598,14 @@
             
             currentMode = mode;
             showScreen('game-screen');
-            // ИСПРАВЛЕНИЕ БАГА: Устанавливаем размеры сразу после показа экрана
             setGameSize();
             
-            // Проверка на случай, если canvas еще не имеет размеров
             if (canvas.width === 0 || canvas.height === 0) {
-                setTimeout(() => initGame(mode), 50); // Попробовать еще раз через 50мс
+                setTimeout(() => initGame(mode), 50);
                 return;
             }
 
-            const maxRows = Math.floor(canvas.height / (bubbleRadius * Math.sqrt(3) * 0.9));
+            const maxRows = Math.floor((canvas.height - uiOverlay.offsetHeight) / (bubbleRadius * Math.sqrt(3) * 0.9));
             grid = new Array(maxRows).fill(null).map(() => new Array(COLS).fill(null));
             projectile = null;
             score = 0;
@@ -633,7 +635,7 @@
         
         function updateUI() {
             scoreDisplay.textContent = score;
-            const misses = (currentMode === 'hard') ? totalMisses : consecutiveMisses;
+            const misses = (currentMode === 'hard') ? totalMisses % SHOTS_UNTIL_DROP : consecutiveMisses;
             shotsLeftDisplay.textContent = SHOTS_UNTIL_DROP - misses;
 
             nextBubbleDisplay.innerHTML = '';
@@ -705,9 +707,9 @@
 
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const launcherX = canvas.width / 2;
-            const launcherY = canvas.height - bubbleRadius;
-            
+            // ИЗМЕНЕНО: позиция пушки
+            const launcherY = canvas.height - uiOverlay.offsetHeight + 30;
+
             for (let r = 0; r < grid.length; r++) {
                 for (let c = 0; c < COLS; c++) {
                     if (grid[r][c]) {
@@ -718,8 +720,8 @@
             }
 
             if(!isShooting && !isGameOver) {
-                 drawBubble(launcherX, launcherY, bubbleRadius, currentBubble.color);
-                 if(isAiming) drawAimingLine(launcherX, launcherY);
+                 drawBubble(canvas.width / 2, launcherY, bubbleRadius, currentBubble.color);
+                 if(isAiming) drawAimingLine(canvas.width / 2, launcherY);
             }
             
             if (projectile) drawBubble(projectile.x, projectile.y, bubbleRadius, projectile.color);
@@ -791,7 +793,7 @@
                     score += Math.pow(2, dropped.length) * 10;
                      floatingTexts.push({ text: `Падение +${dropped.length}!`, x: canvas.width/2, y: canvas.height/2, opacity: 1});
                 }
-                consecutiveMisses = 0; // Сбрасываем только для классики
+                consecutiveMisses = 0;
             } else {
                 handleMiss();
             }
@@ -828,8 +830,15 @@
         }
         
         function checkWinLose() {
-            const lastRowIdx = grid.length - 1;
-            for (let c = 0; c < COLS; c++) { if (grid[lastRowIdx][c]) { endGame(false); return; } }
+            const loseHeight = canvas.height - uiOverlay.offsetHeight;
+            for(let r=0; r < grid.length; r++) {
+                for (let c = 0; c < COLS; c++) { 
+                    if (grid[r][c] && getPixelPos(r,c).y + bubbleRadius > loseHeight) {
+                        endGame(false); 
+                        return; 
+                    }
+                }
+            }
             
             let bubblesLeft = false;
             grid.forEach(row => row.forEach(bubble => { if (bubble) bubblesLeft = true; }));
@@ -841,6 +850,9 @@
             isGameOver = true;
             cancelAnimationFrame(animationFrameId);
             
+            // ИЗМЕНЕНО: Показ межстраничной рекламы
+            vkBridge.send('VKWebAppShowInterstitialAd').catch(e => { console.log("Interstitial Ad not shown", e); });
+
             endGameTitle.textContent = isWin ? "Победа!" : "Проигрыш";
             
             if (score > (stats[currentMode] || 0)) {
@@ -852,7 +864,6 @@
             setTimeout(() => endGameModal.classList.add('visible'), 500);
         }
 
-        // --- Bubble Logic (same as before) ---
         function findMatches(startR, startC) {
             const startBubble = grid[startR]?.[startC];
             if (!startBubble) return [];
@@ -946,7 +957,6 @@
             return { x, y };
         }
         
-        // --- Drawing Functions ---
         function drawBubble(x, y, radius, color) {
             const gradient = ctx.createRadialGradient(x - radius * 0.3, y - radius * 0.3, radius * 0.1, x, y, radius);
             gradient.addColorStop(0, 'rgba(255,255,255,0.7)');
@@ -967,7 +977,8 @@
             if (aimAngle === null) return;
             
             ctx.save();
-            ctx.setLineDash([2, 5]); // ИЗМЕНЕНО: Сплошной пунктир
+            // ИЗМЕНЕНО: стиль пунктира
+            ctx.setLineDash([10, 4]); 
             ctx.lineCap = 'round';
             ctx.lineWidth = 4;
             
@@ -979,12 +990,12 @@
             ctx.beginPath();
             ctx.moveTo(startX, startY);
 
-            // Логика траектории
             let currentX = startX;
             let currentY = startY;
             let currentAngle = aimAngle;
-            const maxBounces = (currentMode === 'classic') ? 1 : 0; // 1 отскок для классики, 0 для харда
-            const maxLength = (currentMode === 'classic') ? canvas.height * 2 : canvas.height * 0.3; // Длина линии
+            const maxBounces = (currentMode === 'classic') ? 1 : 0;
+            // ИЗМЕНЕНО: длина линии
+            const maxLength = (currentMode === 'classic') ? canvas.width + canvas.height : canvas.height * 0.3;
             let remainingLength = maxLength;
 
             for (let i = 0; i <= maxBounces; i++) {
@@ -993,11 +1004,9 @@
                 
                 let t = remainingLength;
                 
-                // Столкновение со стенами
                 if (cosA > 0) t = Math.min(t, (canvas.width - bubbleRadius - currentX) / cosA);
                 else if (cosA < 0) t = Math.min(t, (bubbleRadius - currentX) / cosA);
                 
-                // Столкновение с потолком
                 if (sinA < 0) t = Math.min(t, (bubbleRadius - currentY) / sinA);
 
                 const endX = currentX + t * cosA;
@@ -1008,11 +1017,10 @@
                 remainingLength -= t;
                 if (remainingLength <= 0) break;
                 
-                // Логика отскока
                 if (Math.abs(endX - bubbleRadius) < 1 || Math.abs(endX - (canvas.width - bubbleRadius)) < 1) {
-                    currentAngle = Math.PI - currentAngle; // Отскок от вертикальной стены
+                    currentAngle = Math.PI - currentAngle;
                 } else {
-                    break; // Прекращаем, если отскок не от боковой стены
+                    break;
                 }
                 currentX = endX;
                 currentY = endY;
@@ -1045,7 +1053,7 @@
             if (isGameOver || isPaused || isShooting) return;
             const rect = canvas.getBoundingClientRect();
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            if (clientY - rect.top < uiOverlay.offsetTop) {
+            if (clientY - rect.top < canvas.height - uiOverlay.offsetHeight) {
                  isAiming = true;
                  updateAim(e);
                  e.preventDefault();
@@ -1060,9 +1068,11 @@
             playSound(sounds.shoot);
             isShooting = true;
             
+            const launcherY = canvas.height - uiOverlay.offsetHeight + 30;
+
             projectile = { 
                 x: canvas.width / 2, 
-                y: canvas.height - bubbleRadius, 
+                y: launcherY, 
                 vx: Math.cos(aimAngle) * PROJECTILE_SPEED, 
                 vy: Math.sin(aimAngle) * PROJECTILE_SPEED, 
                 color: currentBubble.color 
@@ -1079,7 +1089,7 @@
             const touchX = (clientX - rect.left) * scaleX;
             const touchY = (clientY - rect.top) * scaleY;
 
-            const launcherY = canvas.height - bubbleRadius;
+            const launcherY = canvas.height - uiOverlay.offsetHeight + 30;
             let angle = Math.atan2(touchY - launcherY, touchX - (canvas.width / 2));
             
             const minAngle = -Math.PI + 0.1;
