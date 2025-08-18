@@ -202,7 +202,7 @@
             bottom: 0px;
             left: 0;
             width: 100%;
-            height: 90px; /* ИЗМЕНЕНО */
+            height: 90px;
             background: var(--header-bg);
             border-top: 4px solid #2a334a;
             display: flex;
@@ -215,11 +215,11 @@
         
         #launcher-base {
             position: absolute;
-            bottom: 60px;  /* ИЗМЕНЕНО */
+            bottom: 60px;
             left: 50%;
             transform: translateX(-50%);
-            width: 70px; /* ИЗМЕНЕНО */
-            height: 45px; /* ИЗМЕНЕНО */
+            width: 70px;
+            height: 45px;
             background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA4MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgc3R5bGU9ImZpbHRlcjp1cmwoI2ZpbHRlcjBfZF8xXzIpIj4KPHBhdGggZD0iTTQwIDQwQzIwIDQwIDAgMjAgMCAyMEg4MEM4MCAyMCA2MCA0MCA0MCA0MFoiIGZpbGw9IiMzMTNCNTciLz4KPC9nPgo8ZGVmcz4KPGZpbHRlciBpZD0iZmlsdGVyMF9kXzFfMiIgeD0iLTMiIHk9Ii0yIiB3aWR0aD0iODYiIGhlaWdodD0iNTIiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iNCIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0bPSJvdXQiLz4KPGZlQ29sb3JNYXRyaXggdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAuMjUgMCIvPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIGluMj0iQmFja2dyb3VuZEltYWdlRml4IiByZXN1bHQ9ImVmZmVjdDFfZHJvcFNoYWRvdyJfPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9ImVmZmVjdDFfZHJvcFNoYWRvdyJfMSByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8L2RlZnM+Cjwvc3ZnPgo=');
             background-size: contain;
             background-repeat: no-repeat;
@@ -503,6 +503,7 @@
         let vkUserId = null;
         let animationFrameId;
         let launcherY;
+        let gridRowOffset = 0; // FIX: Added to track grid offset
 
         // --- Sound Effects ---
         const sounds = {
@@ -583,7 +584,8 @@
             canvas.height = gameContainer.clientHeight;
             
             bubbleRadius = canvas.width / (COLS * 2);
-            launcherY = canvas.height - uiOverlay.offsetHeight / 2 - bubbleRadius;
+            // FIX: Correctly calculate launcher Y position to be above the UI bar
+            launcherY = canvas.height - uiOverlay.offsetHeight - bubbleRadius;
 
             if (!isGameOver && !isPaused && grid.length > 0) {
                 draw();
@@ -611,13 +613,14 @@
             isGameOver = false;
             isPaused = false;
             isShooting = false;
+            gridRowOffset = 0; // FIX: Reset grid offset
             
             const modeTitles = { classic: 'Классика', hard: 'Хард-режим' };
             gameTitleDisplay.textContent = modeTitles[mode];
 
             for (let r = 0; r < START_ROWS; r++) {
                 for (let c = 0; c < COLS; c++) {
-                    const isOffsetRow = r % 2 === 1;
+                    const isOffsetRow = (r + gridRowOffset) % 2 === 1;
                     if (isOffsetRow && c === COLS - 1) continue;
                     grid[r][c] = { color: BUBBLE_COLORS[Math.floor(Math.random() * BUBBLE_COLORS.length)] };
                 }
@@ -642,7 +645,6 @@
             nextBubbleEl.style.width = `${radius * 2}px`;
             nextBubbleEl.style.height = `${radius * 2}px`;
             nextBubbleEl.style.borderRadius = '50%';
-            // ИСПРАВЛЕНО: градиент для следующего шара
             nextBubbleEl.style.background = `radial-gradient(circle at 35% 35%, rgba(255,255,255,0.7), ${nextBubble.color})`;
             nextBubbleDisplay.appendChild(nextBubbleEl);
         }
@@ -814,15 +816,16 @@
             updateUI();
         }
 
-        // ИСПРАВЛЕНО: логика добавления новой линии
         function addNewRow() {
-            grid.pop(); // Удаляем последнюю (нижнюю) строку
+            grid.pop(); // Remove the last (bottom) row
             const newRow = new Array(COLS).fill(null);
+            const isOffsetRow = (0 + gridRowOffset + 1) % 2 === 1; // Check offset for the new top row
             for (let c = 0; c < COLS; c++) {
-                // Новая верхняя строка (r=0) не смещена
+                if(isOffsetRow && c === COLS - 1) continue;
                 newRow[c] = { color: BUBBLE_COLORS[Math.floor(Math.random() * BUBBLE_COLORS.length)] };
             }
-            grid.unshift(newRow); // Добавляем новую строку в начало (наверх)
+            grid.unshift(newRow); // Add the new row to the top
+            gridRowOffset++; // FIX: Increment the offset counter
             playSound(sounds.drop);
             checkWinLose();
         }
@@ -915,7 +918,7 @@
         }
 
         function getNeighbors(r, c) {
-            const isOffset = r % 2 === 1;
+            const isOffset = (r + gridRowOffset) % 2 === 1;
             const directions = [ { dr: 0, dc: -1 }, { dr: 0, dc: 1 }, { dr: -1, dc: 0 }, { dr: 1, dc: 0 }, { dr: -1, dc: isOffset ? 1 : -1 }, { dr: 1, dc: isOffset ? 1 : -1 } ];
             return directions.map(dir => ({ r: r + dir.dr, c: c + dir.dc })).filter(n => n.r >= 0 && n.r < grid.length && n.c >= 0 && n.c < COLS);
         }
@@ -932,12 +935,13 @@
             let bestPos = null;
             for (let r = 0; r < grid.length; r++) {
                 for (let c = 0; c < COLS; c++) {
-                    const isOffsetRow = r % 2 === 1;
+                    const isOffsetRow = (r + gridRowOffset) % 2 === 1;
                     if (isOffsetRow && c >= COLS - 1) continue;
+                    if (grid[r][c]) continue; // Skip non-empty slots
                     const p = getPixelPos(r, c);
                     const dx = x - p.x, dy = y - p.y;
                     const distSq = dx * dx + dy * dy;
-                    if (distSq < bestDistSq && !grid[r][c]) {
+                    if (distSq < bestDistSq) {
                         bestDistSq = distSq;
                         bestPos = { r, c };
                     }
@@ -948,7 +952,8 @@
 
         function getPixelPos(r, c) {
             const rowHeight = bubbleRadius * Math.sqrt(3);
-            const isOffsetRow = r % 2 === 1;
+            // FIX: Use gridRowOffset to maintain consistent horizontal position
+            const isOffsetRow = (r + gridRowOffset) % 2 === 1;
             const xOffset = isOffsetRow ? bubbleRadius : 0;
             const x = c * bubbleRadius * 2 + bubbleRadius + xOffset;
             const y = r * rowHeight + bubbleRadius;
@@ -971,70 +976,98 @@
             ctx.closePath();
         }
         
-        // ИСПРАВЛЕНО: логика прицела
+        // FIX: Complete rewrite of the aiming line logic
         function drawAimingLine(startX, startY) {
             if (aimAngle === null) return;
-            
+
             ctx.save();
-            ctx.setLineDash([10, 5]); 
-            ctx.lineCap = 'round';
             ctx.lineWidth = 4;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.setLineDash([8, 8]);
+            ctx.lineCap = 'round';
+
+            let x = startX;
+            let y = startY;
+            let angle = aimAngle;
             
-            const grad = ctx.createLinearGradient(startX, startY, startX + Math.cos(aimAngle) * 150, startY + Math.sin(aimAngle) * 150);
-            grad.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
-            grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-            ctx.strokeStyle = grad;
+            const maxBounces = (currentMode === 'classic') ? 2 : 0;
+            const step = 1; // Use smaller step for more accuracy
             
             ctx.beginPath();
-            ctx.moveTo(startX, startY);
+            ctx.moveTo(x, y);
 
-            let currentX = startX;
-            let currentY = startY;
-            let currentAngle = aimAngle;
-            const maxBounces = (currentMode === 'classic') ? 1 : 0;
-            const step = 5;
+            for (let bounce = 0; bounce <= maxBounces; bounce++) {
+                let hitSomething = false;
+                // Trace path until it hits something
+                while (true) {
+                    const nextX = x + Math.cos(angle) * step;
+                    const nextY = y + Math.sin(angle) * step;
 
-            for (let i = 0; i < 200; i++) { // Max length of line
-                let nextX = currentX + Math.cos(currentAngle) * step;
-                let nextY = currentY + Math.sin(currentAngle) * step;
+                    // Check for side wall collision
+                    if (nextX - bubbleRadius < 0 || nextX + bubbleRadius > canvas.width) {
+                        if (currentMode === 'classic') {
+                            ctx.lineTo(x, y);
+                            angle = Math.PI - angle;
+                            hitSomething = true;
+                            break; // Exit inner loop to start next bounce segment
+                        } else {
+                            // Hard mode: stop at wall
+                            x = nextX;
+                            y = nextY;
+                            hitSomething = true;
+                            break; 
+                        }
+                    }
+                    
+                    // Check for top wall
+                    if (nextY - bubbleRadius < 0) {
+                        x = nextX;
+                        y = nextY;
+                        hitSomething = true;
+                        break;
+                    }
 
-                // Wall collision
-                if (nextX - bubbleRadius < 0 || nextX + bubbleRadius > canvas.width) {
-                    if (maxBounces > 0) {
-                        ctx.lineTo(currentX, currentY);
-                        currentAngle = Math.PI - currentAngle;
-                        i = 0; // Reset length for bounced segment
-                        continue;
-                    } else {
+                    // Check for bubble collision
+                    let hitBubble = false;
+                    for (let r = 0; r < grid.length; r++) {
+                        for (let c = 0; c < COLS; c++) {
+                            if (grid[r][c]) {
+                                const bubblePos = getPixelPos(r, c);
+                                const dx = nextX - bubblePos.x;
+                                const dy = nextY - bubblePos.y;
+                                if (dx * dx + dy * dy < (bubbleRadius * 2) ** 2) {
+                                    hitBubble = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (hitBubble) break;
+                    }
+
+                    if (hitBubble) {
+                        x = nextX;
+                        y = nextY;
+                        hitSomething = true;
+                        break;
+                    }
+                    
+                    x = nextX;
+                    y = nextY;
+                    
+                    // Hard mode line length limit
+                    const distSq = (x - startX)**2 + (y - startY)**2;
+                    if (currentMode === 'hard' && distSq > (bubbleRadius * 10)**2) {
+                        hitSomething = true;
                         break;
                     }
                 }
                 
-                if (nextY - bubbleRadius < 0) break;
-
-                // Bubble collision
-                let hit = false;
-                for (let r = 0; r < grid.length; r++) {
-                    for (let c = 0; c < COLS; c++) {
-                        if (grid[r][c]) {
-                            const bubblePos = getPixelPos(r, c);
-                            const dx = nextX - bubblePos.x;
-                            const dy = nextY - bubblePos.y;
-                            if (dx * dx + dy * dy < (bubbleRadius * 1.8) ** 2) {
-                                hit = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (hit) break;
+                ctx.lineTo(x, y);
+                if (!hitSomething || bounce >= maxBounces || currentMode === 'hard') {
+                    break; // No more bounces needed or max bounces reached
                 }
-                if (hit) break;
-
-                currentX = nextX;
-                currentY = nextY;
             }
-            
-            ctx.lineTo(currentX, currentY);
+
             ctx.stroke();
             ctx.restore();
         }
@@ -1061,7 +1094,7 @@
             if (isGameOver || isPaused || isShooting) return;
             const rect = canvas.getBoundingClientRect();
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            if (clientY - rect.top < launcherY) {
+            if (clientY - rect.top < launcherY + bubbleRadius * 2) { // Allow touching slightly below
                  isAiming = true;
                  updateAim(e);
                  e.preventDefault();
