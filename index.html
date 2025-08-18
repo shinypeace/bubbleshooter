@@ -476,8 +476,9 @@
 
         // --- Game Constants ---
         const BUBBLE_COLORS = ['#ff6347', '#ffc0cb', '#1E90FF', '#32cd32', '#ffa500', '#8A2BE2', '#00ffff'];
-        const COLS = 11;
-        const START_ROWS = 6;
+        // ИЗМЕНЕНИЕ: Увеличено количество столбцов с 11 до 13
+        const COLS = 13;
+        const START_ROWS = 7; // Немного увеличим стартовые ряды для баланса
         const SHOTS_UNTIL_DROP = 5;
         const PROJECTILE_SPEED = 22;
 
@@ -503,14 +504,14 @@
         let vkUserId = null;
         let animationFrameId;
         let launcherY;
-        let gridRowOffset = 0; // FIX: Added to track grid offset
+        let gridRowOffset = 0;
 
-        // --- Sound Effects ---
+        // ИЗМЕНЕНИЕ: Заменены звуковые эффекты на новые
         const sounds = {
-            shoot: new Audio("data:audio/wav;base64,UklGRlgBAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQBAAD//wH//gD//f8B/f4A/f4A/v4A/v4A/v4A/v4A/P0A/P0A/P0A+v0A+f0A9/0A9/0A9v0A9f0A8/0A8v0A8P0A7v0A7f0A7P0A6/0A6v0A6P0A5/0A5v0A5P0A4/0A4v0A4P0A3/0A3f0A2/0A2v0A2P0A1/0A1f0A1P0A0/0A0f0A0P0Az/0AzP0Ay/0Ayv0AyP0Ax/0AxP0Aw/0Awv0AwP0Av/0AvP0Auv0Auv0AuP0At/0AtP0As/0Asv0AsP0Ar/0ArP0Aq/0Aqv0AqP0Ap/0ApP0Ao/0Aov0AoP0An/0AnP0Am/0Amv0AmP0Al/0AlP0Ak/0Akv0AkP0Aj/0AjP0Ai/0Aiv0AiP0Ah/0AhP0Ag/0Agv0AgP0Af/0AfP0Aev0Aev0AeP0Adv0AdP0Ac/0Acv0AcP0Ab/0AbP0Aav0Aav0AaP0A"),
-            pop: new Audio("data:audio/wav;base64,UklGRlIAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YUwAAAAA9/D58vLz8fH07u/07e/v7e/28fL09ff7/v8A/v8A//8A//8A//8A//8AAP8A/wAA/wD/AP8BAP8C/wP/A/8E/wP/BP8E/wP/A/8E/wP/A/8C/wL/Av8A/wD/AP8A/wD+/vr6+Pj3+Pf3+Pj4+fj4+fj49/f39/f39vX29fX1-fX29vb29/f4+Pj49/f39/f39/f3+Pj4+fj5+fn6+fr6+/v7+/v7+/v7+/v8/Pz8/Pz9/f39/f39/f7+/v7+/////wAA//8A//8A//8A//8A//8A//8A//8A//8A//8A//8A//8A//8A//8A/wD/AAAA//8A//8A//8A//8A/wAA/wD/AP8A/wD/AP8A/wD/AAAA/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AAAAAP8A/wD/AAAAAP///w=="),
-            drop: new Audio("data:audio/wav;base64,UklGRkgCAABXQVZFZm10IBAAAAABAAIARKwAAIhYAQAEABAAZGF0YQgCAAB9mZ+RjoyEgnp5eXRvbm5rbIiJiIeFgX59eXZzbnBramdpaGhpa2xra21ubm9wcHFyc3V2d3h5e3x9fn+AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeYmZqbnJ2en6ChoqOkpaanqKmqq6ytrq+wsbKztLW2t7i5uru8vb6/wMHCw8TFxsfIycrLzM3Oz9DR0tPU1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v8PHy8/T19vf4+fr7/P3+/w=="),
-            combo: new Audio("data:audio/wav;base64,UklGRlQDAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQwDAACAgIaGh4iIiYmKioqKiYiIiIaGhoWFhYWExMTEysrKzMzMzc3Nzs7Ozs3NzMzMysrKxMTExMTEysrKzMzMzc3Nzs7Ozs3NzMzMysrKxMTExMTEysrKzMzMzc3Nzs7Ozs3NzMzMysrKxMTExMTE")
+            shoot: new Audio("data:audio/wav;base64,UklGRlYBAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YVIBAACqqqr9/f36+vrz8/Px8fHw8PDv7+/t7e3r6+vo6Ojn5+fm5ubl5eXk5OTj4+Pi4uLh4eHk5OTm5ubn5+fo6Ojp6enq6urr6+vs7Ozt7e3u7u7v7+/w8PDx8fHy8vLz8/P09PT19fX29vb39/f4+Pj5+fn6+vr7+/v8/Pz9/f3+/v7/AAAAAQECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWltcXV5fYGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6e3x9fn+AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeYmZqbnJ2en6ChoqOkpaanqKmqq6ytrq+wsbKztLW2t7i5uru8vb6/wMHCw8TFxsfIycrLzM3Oz9DR0tPU1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v8PHy8/T19vf4+fr7/P3+/w=="),
+            pop: new Audio("data:audio/wav;base64,UklGRlQBAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQwBAACAgP/+/P38+fj39vX08/Lx7u3s6ufm5ODf3dva2dvZ2dnZ2dvb3N3e3+Dh4uPk5ebn6Onp6err6+vs7Ozt7e7u7u/v8PDw8fHy8vLz8/P09PT19fX29vb39/f4+Pj5+fn6+vr7+/v8/Pz9/f3+/v7/AAAAAQECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWltcXV5fYGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6e3x9fn+AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeYmZqbnJ2en6ChoqOkpaanqKmqq6ytrq+wsbKztLW2t7i5uru8vb6/wMHCw8TFxsfIycrLzM3Oz9DR0tPU1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v8PHy8/T19vf4+fr7/P3+/w=="),
+            drop: new Audio("data:audio/wav;base64,UklGRlABAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQABAACAgP/+/P38+fj39vX08/Lx7u3s6ufm5ODf3dva2dvZ2dnZ2dvb3N3e3+Dh4uPk5ebn6Onp6err6+vs7Ozt7e7u7u/v8PDw8fHy8vLz8/P09PT19fX29vb39/f4+Pj5+fn6+vr7+/v8/Pz9/f3+/v7/AAAAAQECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWltcXV5fYGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6e3x9fn+AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeYmZqbnJ2en6ChoqOkpaanqKmqq6ytrq+wsbKztLW2t7i5uru8vb6/wMHCw8TFxsfIycrLzM3Oz9DR0tPU1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v8PHy8/T19vf4+fr7/P3+/w=="),
+            combo: new Audio("data:audio/wav;base64,UklGRlwBAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YFgBAACAgP/+/P38+fj39vX08/Lx7u3s6ufm5ODf3dva2dvZ2dnZ2dvb3N3e3+Dh4uPk5ebn6Onp6err6+vs7Ozt7e7u7u/v8PDw8fHy8vLz8/P09PT19fX29vb39/f4+Pj5+fn6+vr7+/v8/Pz9/f3+/v7/AAAAAQECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWltcXV5fYGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6e3x9fn+AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeYmZqbnJ2en6ChoqOkpaanqKmqq6ytrq+wsbKztLW2t7i5uru8vb6/wMHCw8TFxsfIycrLzM3Oz9DR0tPU1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v8PHy8/T19vf4+fr7/P3+/w==")
         };
         
         // --- Utility Functions ---
@@ -583,8 +584,8 @@
             canvas.width = gameContainer.clientWidth;
             canvas.height = gameContainer.clientHeight;
             
+            // Радиус шарика теперь зависит от нового количества столбцов
             bubbleRadius = canvas.width / (COLS * 2);
-            // FIX: Correctly calculate launcher Y position to be above the UI bar
             launcherY = canvas.height - uiOverlay.offsetHeight - bubbleRadius;
 
             if (!isGameOver && !isPaused && grid.length > 0) {
@@ -613,7 +614,7 @@
             isGameOver = false;
             isPaused = false;
             isShooting = false;
-            gridRowOffset = 0; // FIX: Reset grid offset
+            gridRowOffset = 0;
             
             const modeTitles = { classic: 'Классика', hard: 'Хард-режим' };
             gameTitleDisplay.textContent = modeTitles[mode];
@@ -817,15 +818,15 @@
         }
 
         function addNewRow() {
-            grid.pop(); // Remove the last (bottom) row
+            grid.pop();
             const newRow = new Array(COLS).fill(null);
-            const isOffsetRow = (0 + gridRowOffset + 1) % 2 === 1; // Check offset for the new top row
+            const isOffsetRow = (0 + gridRowOffset + 1) % 2 === 1;
             for (let c = 0; c < COLS; c++) {
                 if(isOffsetRow && c === COLS - 1) continue;
                 newRow[c] = { color: BUBBLE_COLORS[Math.floor(Math.random() * BUBBLE_COLORS.length)] };
             }
-            grid.unshift(newRow); // Add the new row to the top
-            gridRowOffset++; // FIX: Increment the offset counter
+            grid.unshift(newRow);
+            gridRowOffset++;
             playSound(sounds.drop);
             checkWinLose();
         }
@@ -937,7 +938,7 @@
                 for (let c = 0; c < COLS; c++) {
                     const isOffsetRow = (r + gridRowOffset) % 2 === 1;
                     if (isOffsetRow && c >= COLS - 1) continue;
-                    if (grid[r][c]) continue; // Skip non-empty slots
+                    if (grid[r][c]) continue;
                     const p = getPixelPos(r, c);
                     const dx = x - p.x, dy = y - p.y;
                     const distSq = dx * dx + dy * dy;
@@ -952,7 +953,6 @@
 
         function getPixelPos(r, c) {
             const rowHeight = bubbleRadius * Math.sqrt(3);
-            // FIX: Use gridRowOffset to maintain consistent horizontal position
             const isOffsetRow = (r + gridRowOffset) % 2 === 1;
             const xOffset = isOffsetRow ? bubbleRadius : 0;
             const x = c * bubbleRadius * 2 + bubbleRadius + xOffset;
@@ -976,7 +976,6 @@
             ctx.closePath();
         }
         
-        // FIX: Complete rewrite of the aiming line logic
         function drawAimingLine(startX, startY) {
             if (aimAngle === null) return;
 
@@ -991,27 +990,24 @@
             let angle = aimAngle;
             
             const maxBounces = (currentMode === 'classic') ? 2 : 0;
-            const step = 1; // Use smaller step for more accuracy
+            const step = 1;
             
             ctx.beginPath();
             ctx.moveTo(x, y);
 
             for (let bounce = 0; bounce <= maxBounces; bounce++) {
                 let hitSomething = false;
-                // Trace path until it hits something
                 while (true) {
                     const nextX = x + Math.cos(angle) * step;
                     const nextY = y + Math.sin(angle) * step;
 
-                    // Check for side wall collision
                     if (nextX - bubbleRadius < 0 || nextX + bubbleRadius > canvas.width) {
                         if (currentMode === 'classic') {
                             ctx.lineTo(x, y);
                             angle = Math.PI - angle;
                             hitSomething = true;
-                            break; // Exit inner loop to start next bounce segment
+                            break;
                         } else {
-                            // Hard mode: stop at wall
                             x = nextX;
                             y = nextY;
                             hitSomething = true;
@@ -1019,7 +1015,6 @@
                         }
                     }
                     
-                    // Check for top wall
                     if (nextY - bubbleRadius < 0) {
                         x = nextX;
                         y = nextY;
@@ -1027,7 +1022,6 @@
                         break;
                     }
 
-                    // Check for bubble collision
                     let hitBubble = false;
                     for (let r = 0; r < grid.length; r++) {
                         for (let c = 0; c < COLS; c++) {
@@ -1054,7 +1048,6 @@
                     x = nextX;
                     y = nextY;
                     
-                    // Hard mode line length limit
                     const distSq = (x - startX)**2 + (y - startY)**2;
                     if (currentMode === 'hard' && distSq > (bubbleRadius * 10)**2) {
                         hitSomething = true;
@@ -1064,7 +1057,7 @@
                 
                 ctx.lineTo(x, y);
                 if (!hitSomething || bounce >= maxBounces || currentMode === 'hard') {
-                    break; // No more bounces needed or max bounces reached
+                    break;
                 }
             }
 
@@ -1094,7 +1087,7 @@
             if (isGameOver || isPaused || isShooting) return;
             const rect = canvas.getBoundingClientRect();
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            if (clientY - rect.top < launcherY + bubbleRadius * 2) { // Allow touching slightly below
+            if (clientY - rect.top < launcherY + bubbleRadius * 2) {
                  isAiming = true;
                  updateAim(e);
                  e.preventDefault();
