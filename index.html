@@ -505,19 +505,14 @@
         let launcherY;
         let gridRowOffset = 0;
 
-        // ИЗМЕНЕНИЕ: Создание "пула" звуков для устранения задержек
-        const soundPools = {
-            hit: [],
-            pop: []
+        // ИЗМЕНЕНИЕ: Загрузка ваших MP3 файлов
+        const sounds = {
+            hit: new Audio("hit.mp3"),
+            pop: new Audio("pop.mp3"),
+            backgroundMusic: new Audio("music.mp3")
         };
-        const POOL_SIZE = 5; // Количество копий каждого звука
-        for (let i = 0; i < POOL_SIZE; i++) {
-            soundPools.hit.push(new Audio("hit.mp3"));
-            soundPools.pop.push(new Audio("pop.mp3"));
-        }
-        const backgroundMusic = new Audio("music.mp3");
-        backgroundMusic.loop = true;
-        backgroundMusic.volume = 0.3;
+        sounds.backgroundMusic.loop = true;
+        sounds.backgroundMusic.volume = 0.3; // Громкость фоновой музыки (от 0.0 до 1.0)
         
         // --- Utility Functions ---
         function debounce(func, wait) {
@@ -529,39 +524,12 @@
             };
         }
         
-        // ИЗМЕНЕНИЕ: Функция для проигрывания звука из пула
-        function playSound(soundName) {
-            if (soundEnabled) {
-                const pool = soundPools[soundName];
-                if (!pool) return;
-                
-                // Находим свободный звук в пуле
-                let soundToPlay = pool.find(s => s.paused || s.ended);
-                if (soundToPlay) {
-                    soundToPlay.currentTime = 0;
-                    soundToPlay.play().catch(e => {});
-                } else {
-                    // Если все заняты, проигрываем первый (может немного прервать)
-                    pool[0].currentTime = 0;
-                    pool[0].play().catch(e => {});
-                }
-            }
+        function playSound(sound) { 
+            if (soundEnabled) { 
+                sound.currentTime = 0; 
+                sound.play().catch(e => {}); 
+            } 
         }
-
-        // ИЗМЕНЕНИЕ: Функция для "разблокировки" аудио в браузере
-        function unlockAudio() {
-            let allSounds = [...soundPools.hit, ...soundPools.pop, backgroundMusic];
-            allSounds.forEach(sound => {
-                sound.play().then(() => sound.pause()).catch(e => {});
-            });
-            // Удаляем обработчик после первого выполнения
-            document.body.removeEventListener('click', unlockAudio);
-            document.body.removeEventListener('touchstart', unlockAudio);
-        }
-        // Добавляем обработчики для разблокировки
-        document.body.addEventListener('click', unlockAudio);
-        document.body.addEventListener('touchstart', unlockAudio);
-
 
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
@@ -636,8 +604,11 @@
                 return;
             }
             
+            // ИЗМЕНЕНИЕ: Запуск фоновой музыки при старте игры
             if (soundEnabled) {
-                backgroundMusic.play().catch(e => {});
+                sounds.backgroundMusic.play().catch(e => {
+                     console.log("Музыка будет включена после первого действия игрока.");
+                });
             }
 
             const maxRows = Math.floor((canvas.height - uiOverlay.offsetHeight) / (bubbleRadius * Math.sqrt(3) * 0.9));
@@ -783,18 +754,16 @@
             const p = projectile;
             projectile = null;
             
+            // ИЗМЕНЕНИЕ: Воспроизводим звук приземления шара
+            playSound(sounds.hit);
+            
             const snapPos = findNearestEmptySlot(p.x, p.y);
 
             if (snapPos && snapPos.r < grid.length) {
                 grid[snapPos.r][snapPos.c] = { color: p.color };
-                const matchFound = await handleMatches(snapPos.r, snapPos.c);
-                // ИЗМЕНЕНИЕ: Воспроизводим звук удара, только если не было совпадения
-                if (!matchFound) {
-                    playSound('hit');
-                }
+                await handleMatches(snapPos.r, snapPos.c);
             } else {
                  handleMiss();
-                 playSound('hit');
                  swapToNextBubble();
             }
             isShooting = false;
@@ -809,7 +778,8 @@
         async function handleMatches(r, c) {
             const matches = findMatches(r, c);
             if (matches.length >= 3) {
-                playSound('pop');
+                // ИЗМЕНЕНИЕ: Воспроизводим звук лопания шаров
+                playSound(sounds.pop);
                 let sumX = 0, sumY = 0;
                 matches.forEach(bubble => {
                     const pos = getPixelPos(bubble.r, bubble.c);
@@ -833,15 +803,11 @@
                      floatingTexts.push({ text: `Падение +${dropped.length}!`, x: canvas.width/2, y: canvas.height/2, opacity: 1});
                 }
                 consecutiveMisses = 0;
-                swapToNextBubble();
-                checkWinLose();
-                return true; // ИЗМЕНЕНИЕ: Возвращаем true, если было совпадение
             } else {
                 handleMiss();
-                swapToNextBubble();
-                checkWinLose();
-                return false; // ИЗМЕНЕНИЕ: Возвращаем false, если совпадения не было
             }
+            swapToNextBubble();
+            checkWinLose();
         }
         
         function checkDrop() {
@@ -1179,11 +1145,7 @@
             canvas.addEventListener('touchend', handlePointerUp);
             app.addEventListener('contextmenu', e => e.preventDefault());
 
-            document.querySelectorAll('.menu-button[data-mode]').forEach(btn => {
-                btn.addEventListener('click', () => initGame(btn.dataset.mode));
-                // Разблокируем аудио при первом нажатии на кнопку меню
-                btn.addEventListener('click', unlockAudio, { once: true });
-            });
+            document.querySelectorAll('.menu-button[data-mode]').forEach(btn => btn.addEventListener('click', () => initGame(btn.dataset.mode)));
             
             statsBtn.addEventListener('click', () => {
                 document.getElementById('stats-classic').textContent = stats.classic || 0;
@@ -1221,8 +1183,8 @@
             const toMenu = () => {
                 pauseModal.classList.remove('visible');
                 endGameModal.classList.remove('visible');
-                backgroundMusic.pause();
-                backgroundMusic.currentTime = 0;
+                sounds.backgroundMusic.pause();
+                sounds.backgroundMusic.currentTime = 0;
                 showScreen('main-menu-screen');
             };
 
@@ -1249,17 +1211,25 @@
                 soundOnIcon.classList.toggle('hidden', !soundEnabled);
                 soundOffIcon.classList.toggle('hidden', soundEnabled);
                 
-                let allSounds = [...soundPools.hit, ...soundPools.pop, backgroundMusic];
-                allSounds.forEach(sound => {
+                // ИЗМЕНЕНИЕ: Включение/выключение всей музыки и звуков
+                Object.values(sounds).forEach(sound => {
                     sound.muted = !soundEnabled;
                 });
 
-                if (soundEnabled && !isGameOver) {
-                    backgroundMusic.play().catch(e => {});
+                // Отдельно управляем паузой для фоновой музыки
+                if (soundEnabled) {
+                    sounds.backgroundMusic.play().catch(e => {});
                 } else {
-                    backgroundMusic.pause();
+                    sounds.backgroundMusic.pause();
                 }
             });
+            
+            // Запускаем музыку при первом клике, если браузер заблокировал автозапуск
+            document.body.addEventListener('click', () => {
+                if (soundEnabled && sounds.backgroundMusic.paused) {
+                    sounds.backgroundMusic.play().catch(e => {});
+                }
+            }, { once: true });
 
             window.addEventListener('resize', debounce(setGameSize, 250));
         }
