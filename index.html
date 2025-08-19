@@ -153,31 +153,27 @@
         .icon-button:active { transform: scale(0.9); background-color: rgba(0,0,0,0.4); }
         .icon-button svg { width: 28px; height: 28px; }
         
-        #game-title {
-            font-size: 1.4rem;
-            font-weight: 600;
-            flex-grow: 1;
-            text-align: center;
-            padding: 0 10px;
+        /* ИЗМЕНЕНИЕ: Стили для центральной части хедера */
+        .center-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
             background: rgba(0,0,0,0.2);
             border-radius: 20px;
             padding: 5px 15px;
+            flex-grow: 1;
+            margin: 0 10px;
+        }
+
+        #game-title {
+            font-size: 1.2rem;
+            font-weight: 600;
         }
 
         #score-display {
-            position: absolute;
-            top: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 2rem;
+            font-size: 1.4rem;
             font-weight: 700;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 8px 25px;
-            border-radius: 25px;
-            border: 2px solid rgba(255,255,255,0.5);
-            z-index: 30;
-            color: var(--text-color);
-            text-shadow: 2px 2px 3px var(--shadow-color);
         }
 
         #game-container {
@@ -196,13 +192,14 @@
             height: 100%;
             cursor: pointer;
         }
-
+        
+        /* ИЗМЕНЕНИЕ: Уменьшена высота нижней панели */
         #ui-overlay {
             position: absolute;
             bottom: 0px;
             left: 0;
             width: 100%;
-            height: 90px;
+            height: 80px;
             background: var(--header-bg);
             border-top: 4px solid #2a334a;
             display: flex;
@@ -213,9 +210,10 @@
             z-index: 20;
         }
         
+        /* ИЗМЕНЕНИЕ: Скорректирована позиция пушки */
         #launcher-base {
             position: absolute;
-            bottom: 60px;
+            bottom: 50px;
             left: 50%;
             transform: translateX(-50%);
             width: 70px;
@@ -357,13 +355,16 @@
                     <button class="icon-button" id="pause-btn">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="4" x2="6" y2="20"></line><line x1="18" y1="4" x2="18" y2="20"></line></svg>
                     </button>
-                    <div id="game-title"></div>
+                    <!-- ИЗМЕНЕНИЕ: Обновленная структура хедера -->
+                    <div class="center-info">
+                        <div id="game-title"></div>
+                        <div id="score-display">0</div>
+                    </div>
                     <button class="icon-button" id="sound-btn">
                         <svg id="sound-on-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
                         <svg id="sound-off-icon" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
                     </button>
                 </header>
-                <div id="score-display">0</div>
                 <div id="launcher-base"></div>
                 <div id="ui-overlay">
                      <div id="shots-left-display">
@@ -504,8 +505,8 @@
         let animationFrameId;
         let launcherY;
         let gridRowOffset = 0;
+        let loseY; // ИЗМЕНЕНИЕ: Переменная для линии проигрыша
 
-        // --- ИЗМЕНЕНИЕ: Убрали звук 'pop' ---
         const sounds = {
             hit: new Audio("hit.mp3"),
             backgroundMusic: new Audio("music.mp3")
@@ -585,6 +586,9 @@
             
             bubbleRadius = canvas.width / (COLS * 2);
             launcherY = canvas.height - uiOverlay.offsetHeight - bubbleRadius;
+            
+            // ИЗМЕНЕНИЕ: Расчет позиции линии проигрыша
+            loseY = launcherY - bubbleRadius * 2;
 
             if (!isGameOver && !isPaused && grid.length > 0) {
                 draw();
@@ -722,6 +726,9 @@
                     }
                 }
             }
+            
+            // ИЗМЕНЕНИЕ: Отрисовка линии проигрыша
+            drawLosingLine();
 
             if(!isShooting && !isGameOver) {
                  drawBubble(canvas.width / 2, launcherY, bubbleRadius, currentBubble.color);
@@ -775,7 +782,6 @@
         async function handleMatches(r, c) {
             const matches = findMatches(r, c);
             if (matches.length >= 3) {
-                // --- ИЗМЕНЕНИЕ: Звук 'pop' удален отсюда ---
                 let sumX = 0, sumY = 0;
                 matches.forEach(bubble => {
                     const pos = getPixelPos(bubble.r, bubble.c);
@@ -836,10 +842,10 @@
         }
         
         function checkWinLose() {
-            const loseHeight = canvas.height - uiOverlay.offsetHeight;
+            // ИЗМЕНЕНИЕ: Проверка проигрыша по новой линии
             for(let r=0; r < grid.length; r++) {
                 for (let c = 0; c < COLS; c++) { 
-                    if (grid[r][c] && getPixelPos(r,c).y + bubbleRadius > loseHeight) {
+                    if (grid[r][c] && getPixelPos(r,c).y + bubbleRadius > loseY) {
                         endGame(false); 
                         return; 
                     }
@@ -980,6 +986,21 @@
             ctx.closePath();
         }
         
+        // ИЗМЕНЕНИЕ: Новая функция для отрисовки линии проигрыша
+        function drawLosingLine() {
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(0, loseY);
+            ctx.lineTo(canvas.width, loseY);
+            ctx.strokeStyle = 'rgba(255, 82, 82, 0.8)';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([10, 10]);
+            ctx.shadowColor = 'rgba(0,0,0,0.5)';
+            ctx.shadowBlur = 5;
+            ctx.stroke();
+            ctx.restore();
+        }
+
         function drawAimingLine(startX, startY) {
             if (aimAngle === null) return;
 
@@ -1187,19 +1208,15 @@
             mainMenuBtn.addEventListener('click', toMenu);
             mainMenuEndBtn.addEventListener('click', toMenu);
 
-            // --- ИЗМЕНЕНИЕ: Логика для кнопки "Доп. попытка" ---
             extraLifeBtn.addEventListener('click', async () => {
                  extraLifeBtn.disabled = true;
                  try {
-                    // Проверяем, доступна ли реклама
                     await vkBridge.send('VKWebAppCheckNativeAds', { ad_format: 'reward' });
-                    // Показываем рекламу
                     const adData = await vkBridge.send('VKWebAppShowNativeAds', { ad_format: 'reward' });
                     
-                    if (adData.result) { // Успешный просмотр
+                    if (adData.result) {
                         endGameModal.classList.remove('visible');
                         
-                        // Находим самый нижний ряд с шарами
                         let maxRow = -1;
                         for (let r = grid.length - 1; r >= 0; r--) {
                             if (grid[r].some(cell => cell !== null)) {
@@ -1208,7 +1225,6 @@
                             }
                         }
 
-                        // Очищаем 5 нижних рядов
                         if (maxRow !== -1) {
                             for (let r = maxRow; r >= Math.max(0, maxRow - 4); r--) {
                                 for (let c = 0; c < COLS; c++) {
@@ -1221,17 +1237,14 @@
                             }
                         }
                         
-                        // Убираем "висящие" шары после очистки
                         await findFloatingBubbles();
 
-                        // Продолжаем игру
                         isGameOver = false;
                         lastTime = performance.now();
                         gameLoop(lastTime);
                     }
                 } catch (e) { 
                     console.error("Rewarded ad error:", e); 
-                    // Можно показать пользователю сообщение об ошибке
                 } finally {
                     extraLifeBtn.disabled = false;
                 }
@@ -1261,7 +1274,6 @@
 
             window.addEventListener('resize', debounce(setGameSize, 250));
             
-            // --- ИЗМЕНЕНИЕ: Управление музыкой при сворачивании приложения ---
             vkBridge.subscribe((e) => {
                 if (e.detail.type === 'VKWebAppViewHide') {
                     if(soundEnabled) sounds.backgroundMusic.pause();
