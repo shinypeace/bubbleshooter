@@ -505,14 +505,13 @@
         let launcherY;
         let gridRowOffset = 0;
 
-        // ИЗМЕНЕНИЕ: Загрузка ваших MP3 файлов
+        // --- ИЗМЕНЕНИЕ: Убрали звук 'pop' ---
         const sounds = {
             hit: new Audio("hit.mp3"),
-            pop: new Audio("pop.mp3"),
             backgroundMusic: new Audio("music.mp3")
         };
         sounds.backgroundMusic.loop = true;
-        sounds.backgroundMusic.volume = 0.3; // Громкость фоновой музыки (от 0.0 до 1.0)
+        sounds.backgroundMusic.volume = 0.3;
         
         // --- Utility Functions ---
         function debounce(func, wait) {
@@ -604,7 +603,6 @@
                 return;
             }
             
-            // ИЗМЕНЕНИЕ: Запуск фоновой музыки при старте игры
             if (soundEnabled) {
                 sounds.backgroundMusic.play().catch(e => {
                      console.log("Музыка будет включена после первого действия игрока.");
@@ -754,7 +752,6 @@
             const p = projectile;
             projectile = null;
             
-            // ИЗМЕНЕНИЕ: Воспроизводим звук приземления шара
             playSound(sounds.hit);
             
             const snapPos = findNearestEmptySlot(p.x, p.y);
@@ -778,8 +775,7 @@
         async function handleMatches(r, c) {
             const matches = findMatches(r, c);
             if (matches.length >= 3) {
-                // ИЗМЕНЕНИЕ: Воспроизводим звук лопания шаров
-                playSound(sounds.pop);
+                // --- ИЗМЕНЕНИЕ: Звук 'pop' удален отсюда ---
                 let sumX = 0, sumY = 0;
                 matches.forEach(bubble => {
                     const pos = getPixelPos(bubble.r, bubble.c);
@@ -1191,19 +1187,54 @@
             mainMenuBtn.addEventListener('click', toMenu);
             mainMenuEndBtn.addEventListener('click', toMenu);
 
+            // --- ИЗМЕНЕНИЕ: Логика для кнопки "Доп. попытка" ---
             extraLifeBtn.addEventListener('click', async () => {
+                 extraLifeBtn.disabled = true;
                  try {
-                    const adData = await vkBridge.send('VKWebAppShowRewardAd', {});
-                    if (adData.result) {
+                    // Проверяем, доступна ли реклама
+                    await vkBridge.send('VKWebAppCheckNativeAds', { ad_format: 'reward' });
+                    // Показываем рекламу
+                    const adData = await vkBridge.send('VKWebAppShowNativeAds', { ad_format: 'reward' });
+                    
+                    if (adData.result) { // Успешный просмотр
                         endGameModal.classList.remove('visible');
+                        
+                        // Находим самый нижний ряд с шарами
+                        let maxRow = -1;
+                        for (let r = grid.length - 1; r >= 0; r--) {
+                            if (grid[r].some(cell => cell !== null)) {
+                                maxRow = r;
+                                break;
+                            }
+                        }
+
+                        // Очищаем 5 нижних рядов
+                        if (maxRow !== -1) {
+                            for (let r = maxRow; r >= Math.max(0, maxRow - 4); r--) {
+                                for (let c = 0; c < COLS; c++) {
+                                    if(grid[r][c]) {
+                                       const pos = getPixelPos(r,c);
+                                       createParticles(pos.x, pos.y, grid[r][c].color);
+                                       grid[r][c] = null;
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // Убираем "висящие" шары после очистки
+                        await findFloatingBubbles();
+
+                        // Продолжаем игру
                         isGameOver = false;
-                        consecutiveMisses = -5;
-                        totalMisses = -5;
-                        updateUI();
                         lastTime = performance.now();
                         gameLoop(lastTime);
                     }
-                } catch (e) { console.error("Rewarded ad error:", e); }
+                } catch (e) { 
+                    console.error("Rewarded ad error:", e); 
+                    // Можно показать пользователю сообщение об ошибке
+                } finally {
+                    extraLifeBtn.disabled = false;
+                }
             });
             
             soundBtn.addEventListener('click', () => {
@@ -1211,27 +1242,36 @@
                 soundOnIcon.classList.toggle('hidden', !soundEnabled);
                 soundOffIcon.classList.toggle('hidden', soundEnabled);
                 
-                // ИЗМЕНЕНИЕ: Включение/выключение всей музыки и звуков
                 Object.values(sounds).forEach(sound => {
                     sound.muted = !soundEnabled;
                 });
 
-                // Отдельно управляем паузой для фоновой музыки
-                if (soundEnabled) {
+                if (soundEnabled && !isPaused && !isGameOver) {
                     sounds.backgroundMusic.play().catch(e => {});
                 } else {
                     sounds.backgroundMusic.pause();
                 }
             });
             
-            // Запускаем музыку при первом клике, если браузер заблокировал автозапуск
             document.body.addEventListener('click', () => {
-                if (soundEnabled && sounds.backgroundMusic.paused) {
+                if (soundEnabled && sounds.backgroundMusic.paused && !isPaused && !isGameOver) {
                     sounds.backgroundMusic.play().catch(e => {});
                 }
             }, { once: true });
 
             window.addEventListener('resize', debounce(setGameSize, 250));
+            
+            // --- ИЗМЕНЕНИЕ: Управление музыкой при сворачивании приложения ---
+            vkBridge.subscribe((e) => {
+                if (e.detail.type === 'VKWebAppViewHide') {
+                    if(soundEnabled) sounds.backgroundMusic.pause();
+                }
+                if (e.detail.type === 'VKWebAppViewRestore') {
+                    if(soundEnabled && !isPaused && !isGameOver) {
+                        sounds.backgroundMusic.play().catch(e => {});
+                    }
+                }
+            });
         }
 
         // --- App Initialization ---
