@@ -275,7 +275,7 @@
             <div class="promo-footer">
                 <button id="promo-button" class="button button-with-icon">
                     <img src="icon.png" alt="Bubble Shooter Icon" onerror="this.onerror=null;this.src='https://placehold.co/64x64/0d47a1/ffffff?text=B';">
-                    <span>Bubble<br>Shooter</span>
+                    <span>Sort<br>Puzzle</span>
                 </button>
             </div>
         </div>
@@ -644,7 +644,7 @@
                 
                 this.buttons.promo.addEventListener('click', () => {
                     if (typeof vkBridge !== 'undefined' && this.isVK) {
-                        vkBridge.send('VKWebAppOpenApp', { app_id: 54051411 })
+                        vkBridge.send('VKWebAppOpenApp', { app_id: 54143992 })
                             .catch(e => console.error("VKWebAppOpenApp failed:", e));
                     } else {
                         console.log("Not a VK App or vkBridge not found, cannot open app.");
